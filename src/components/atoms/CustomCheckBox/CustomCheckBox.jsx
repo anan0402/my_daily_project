@@ -4,9 +4,9 @@ function CustomCheckBox({ sx, ...props }) {
   return (
     <Checkbox
       sx={{
-        color: 'var(--app-border-color)',
+        color: 'var(--color-border)',
         '&.Mui-checked': {
-          color: 'var(--app-checkbox-checked-bg)'
+          color: 'var(--color-fg)'
         },
         ...sx
       }}

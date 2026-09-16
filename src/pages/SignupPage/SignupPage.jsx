@@ -1,16 +1,11 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
-import Link from '@mui/material/Link'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Link as RouterLink, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { useState } from 'react'
 import * as yup from 'yup'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
-import CustomButton from '@/components/atoms/CustomButton/CustomButton'
-import CustomTextField from '@/components/atoms/CustomTextField/CustomTextField'
 import AuthCardLayout from '@/components/templates/AuthCardLayout/AuthCardLayout'
 import { register as registerAccount } from '@/services/auth.service'
 import { getErrorMessage } from '@/utils/getErrorMessage'
@@ -57,91 +52,84 @@ function SignupPage() {
     } catch (error) {
       const errorMessage = getErrorMessage(error, 'Đăng ký thất bại!')
 
-      // Check if error is due to already registered account
       if (error.response?.status === 409 || errorMessage.includes('đã tồn tại')) {
         showErrorToast('Email đã được đăng ký. Chuyển đến trang xác thực...')
-
         navigate(`/account/verification?email=${encodeURIComponent(formValues.email)}`)
-
       } else {
         showErrorToast(errorMessage)
       }
     }
   }
 
-
   return (
-    <AuthCardLayout title="Đăng ký">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
-      >
-              <CustomTextField
-                fullWidth
-                label="Họ và tên"
-                placeholder="Nhập họ và tên"
-                error={Boolean(errors.name)}
-                helperText={errors.name?.message}
-                {...register('name')}
-              />
-              <CustomTextField
-                fullWidth
-                label="Email"
-                required
-                type="email"
-                placeholder="ban@congty.com"
-                error={Boolean(errors.email)}
-                helperText={errors.email?.message}
-                {...register('email')}
-              />
-              <CustomTextField
-                fullWidth
-                label="Mật khẩu"
-                required
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Nhập mật khẩu"
-                error={Boolean(errors.password)}
-                helperText={errors.password?.message}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          edge="end"
-                          onClick={() => setShowPassword((prev) => !prev)}
-                          aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                        >
-                          <FontAwesomeIcon
-                            icon={showPassword ? faEyeSlash : faEye}
-                            style={{ fontSize: 14 }}
-                          />
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }
-                }}
-                {...register('password')}
-              />
+    <AuthCardLayout
+      title="Sign up"
+      subtitle="Create your account to get started."
+      footerText="Already have an account?"
+      footerLinkText="Sign in"
+      footerLinkTo="/login"
+    >
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="auth-form">
+        {/* Name */}
+        <div className="auth-field">
+          <label className="auth-label">Full Name</label>
+          <input
+            type="text"
+            placeholder="John Doe"
+            className={`auth-input ${errors.name ? 'auth-input--error' : ''}`}
+            {...register('name')}
+          />
+          {errors.name && (
+            <span className="auth-error">{errors.name.message}</span>
+          )}
+        </div>
 
-              <CustomButton
-                size="large"
-                fullWidth
-                variable="primary"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                Đăng ký
-              </CustomButton>
+        {/* Email */}
+        <div className="auth-field">
+          <label className="auth-label">Email</label>
+          <input
+            type="email"
+            placeholder="you@example.com"
+            className={`auth-input ${errors.email ? 'auth-input--error' : ''}`}
+            {...register('email')}
+          />
+          {errors.email && (
+            <span className="auth-error">{errors.email.message}</span>
+          )}
+        </div>
 
+        {/* Password */}
+        <div className="auth-field">
+          <label className="auth-label">Password</label>
+          <div className="auth-input-wrapper">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              className={`auth-input ${errors.password ? 'auth-input--error' : ''}`}
+              {...register('password')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              className="auth-toggle-password"
+            >
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </button>
+          </div>
+          {errors.password && (
+            <span className="auth-error">{errors.password.message}</span>
+          )}
+        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="auth-submit"
+        >
+          {isSubmitting ? 'Creating account...' : 'Sign up'}
+        </button>
       </form>
-
-      <p className="auth-card__footer">
-        Đã có tài khoản?{' '}
-        <Link component={RouterLink} to="/login" underline="none" alignItems="center">
-          <span className="auth-card__link">Đăng nhập ngay</span>
-        </Link>
-      </p>
     </AuthCardLayout>
   )
 }

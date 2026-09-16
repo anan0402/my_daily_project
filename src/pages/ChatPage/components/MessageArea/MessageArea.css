@@ -42,7 +42,7 @@
 
 .scroll-to-bottom-button svg {
   font-size: 18px;
-  color: var(--app-button-color);
+  color: var(--color-fg);
 }
 
 /* Message bubbles - reusing existing styles from ChatPage */
@@ -57,7 +57,7 @@
 
 .message-sent {
   margin-left: auto;
-  background-color: var(--app-button-color);
+  background-color: var(--color-fg);
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 4px;

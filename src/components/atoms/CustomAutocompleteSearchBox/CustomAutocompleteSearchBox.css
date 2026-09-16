@@ -8,18 +8,18 @@
   padding: 4px 8px !important;
   height: 40px;
   background-color: transparent;
-  border: 1px solid var(--app-border-color);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .custom-autocomplete-search-box .MuiOutlinedInput-root:hover {
-  border-color: var(--app-button-color);
+  border-color: var(--color-fg);
 }
 
 .custom-autocomplete-search-box .MuiOutlinedInput-root.Mui-focused {
-  border-color: var(--app-button-color);
-  box-shadow: 0 0 0 2px rgba(var(--app-button-color-rgb, 99, 102, 241), 0.1);
+  border-color: var(--color-fg);
+  box-shadow: 0 0 0 2px var(--color-shadow);
 }
 
 .custom-autocomplete-search-box .MuiOutlinedInput-notchedOutline {
@@ -29,16 +29,16 @@
 .custom-autocomplete-search-box .MuiOutlinedInput-input {
   padding: 8px 8px 8px 0 !important;
   font-size: 14px;
-  color: var(--app-text-color);
+  color: var(--color-fg);
 }
 
 .custom-autocomplete-search-box .MuiOutlinedInput-input::placeholder {
-  color: var(--app-text-color);
+  color: var(--color-fg);
   opacity: 0.5;
 }
 
 .custom-autocomplete-search-box .search-icon {
-  color: var(--app-text-color);
+  color: var(--color-fg);
   opacity: 0.5;
   font-size: 14px;
 }
@@ -52,7 +52,7 @@
 }
 
 .custom-autocomplete-search-box .MuiAutocomplete-loading {
-  color: var(--app-text-color);
+  color: var(--color-fg);
 }
 
 /* Dropdown styling */
@@ -61,7 +61,7 @@
 }
 
 .custom-autocomplete-search-box .MuiAutocomplete-paper {
-  background-color: var(--app-surface-color) !important;
+  background-color: var(--color-bg) !important;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -73,20 +73,20 @@
 .custom-autocomplete-search-box .MuiAutocomplete-option {
   padding: 10px 16px;
   font-size: 14px;
-  color: var(--app-text-color);
+  color: var(--color-fg);
 }
 
 .custom-autocomplete-search-box .MuiAutocomplete-option:hover {
-  background-color: rgba(99, 102, 241, 0.1);
+  background-color: var(--color-surface-hover);
 }
 
 .custom-autocomplete-search-box .MuiAutocomplete-option[aria-selected='true'] {
-  background-color: rgba(99, 102, 241, 0.15);
+  background-color: var(--color-border);
 }
 
 .custom-autocomplete-search-box .MuiAutocomplete-noOptions {
   padding: 10px 16px;
   font-size: 14px;
-  color: var(--app-text-color);
+  color: var(--color-fg);
   opacity: 0.5;
 }

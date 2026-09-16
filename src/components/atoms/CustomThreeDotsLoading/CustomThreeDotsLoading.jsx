@@ -6,7 +6,7 @@ import './CustomThreeDotsLoading.css'
  * Atom: Three dots loading animation
  * Usage: Typing indicators, loading states, button loading
  */
-function CustomThreeDotsLoading({ size = 8, color = 'var(--app-button-color)', gap = 4, sx }) {
+function CustomThreeDotsLoading({ size = 8, color = 'var(--color-fg)', gap = 4, sx }) {
   const dotStyle = {
     width: size,
     height: size,

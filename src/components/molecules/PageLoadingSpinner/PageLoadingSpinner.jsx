@@ -16,7 +16,7 @@ function PageLoadingSpinner({ message, size = 48 }) {
       aria-label={message || 'Đang tải'}
     >
       <div className="page-loading-spinner__content">
-        <CircularProgress size={size} sx={{ color: 'var(--app-button-color)' }} />
+        <CircularProgress size={size} sx={{ color: 'var(--color-fg)' }} />
         {message ? (
           <Text variant="body2" className="page-loading-spinner__message">
             {message}

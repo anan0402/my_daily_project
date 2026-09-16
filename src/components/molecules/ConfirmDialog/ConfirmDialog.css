@@ -6,7 +6,7 @@
 .confirm-dialog-title {
   color: #000 !important;
   font-weight: 700 !important;
-  border-bottom: 1px solid var(--app-border-color) !important;
+  border-bottom: 1px solid var(--color-border) !important;
 }
 
 .confirm-dialog-content {
@@ -14,7 +14,7 @@
 }
 
 .confirm-dialog-content p {
-  color: var(--app-text-color);
+  color: var(--color-fg);
   margin: 0;
   line-height: 1.6;
 }

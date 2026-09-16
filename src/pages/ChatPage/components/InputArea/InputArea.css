@@ -45,11 +45,11 @@
 }
 
 .chat-send-button--active {
-  color: var(--app-button-color);
+  color: var(--color-fg);
 }
 
 .chat-send-button--active:hover {
-  color: var(--app-button-color-hover);
+  color: var(--color-subtle);
 }
 
 .chat-send-button:disabled {

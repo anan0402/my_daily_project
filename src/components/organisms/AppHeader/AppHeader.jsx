@@ -12,19 +12,18 @@ import Text from '@/components/atoms/Text/Text'
 import CustomButton from '@/components/atoms/CustomButton/CustomButton'
 import CustomAutocompleteSearchBox from '@/components/atoms/CustomAutocompleteSearchBox'
 import CustomAvatar from '@/components/atoms/CustomAvatar/CustomAvatar'
+import PawIcon from '@/components/atoms/PawIcon'
 import ConfirmDialog from '@/components/molecules/ConfirmDialog/ConfirmDialog'
 import { useSearch } from '@/hooks/useSearch'
 import './AppHeader.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faPaw,
   faUser,
   faCog,
   faQuestionCircle,
   faSignOutAlt,
   faChevronRight,
   faSearch,
-  faTimes,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons'
 import Divider from '@mui/material/Divider'
@@ -118,7 +117,9 @@ function AppHeader({ showSidebar = false }) {
       <Toolbar className="app-tool-bar">
         <div className="app-header-left">
           <Text variant="h6" className="app-header-title" >
-            <FontAwesomeIcon icon={faPaw} className="app-header-icon" onClick={() => navigate(`/`)} />
+            <div className="app-header-icon" onClick={() => navigate(`/`)}>
+              <PawIcon size={24} />
+            </div>
             <div className="search-box-desktop" onClick={() => navigate(`/`)}>Daily days</div>
           </Text>
           {currentUser && <>
@@ -136,7 +137,7 @@ function AppHeader({ showSidebar = false }) {
             <IconButton
               className="search-icon-mobile"
               onClick={handleToggleSearchDrawer}
-              sx={{ color: 'var(--app-text-color)' }}
+              sx={{ color: 'var(--color-fg)' }}
             >
               <FontAwesomeIcon icon={faSearch} />
             </IconButton>
@@ -156,7 +157,7 @@ function AppHeader({ showSidebar = false }) {
                 <IconButton
                   onClick={handleToggleSidebar}
                   className="sidebar-toggle-button"
-                  sx={{ color: 'var(--app-text-color)' }}
+                  sx={{ color: 'var(--color-fg)' }}
                 >
                   <FontAwesomeIcon icon={faUsers} />
                 </IconButton>

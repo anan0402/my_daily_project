@@ -17,20 +17,20 @@ function CustomButton({ variable = 'primary', sx, ...props }) {
     case 'outline':
       buttonVariant = 'outlined'
       variableStyle = {
-        borderColor: 'var(--app-border-color)',
+        borderColor: 'var(--color-border)',
         color: 'inherit',
         '&:hover': {
-          borderColor: 'var(--app-border-color)'
+          borderColor: 'var(--color-border)'
         }
       }
       break
     case 'primary':
     default:
       variableStyle = {
-        backgroundColor: 'var(--app-button-color)',
+        backgroundColor: 'var(--color-fg)',
         color: '#fff',
         '&:hover': {
-          backgroundColor: 'var(--app-button-color-hover)'
+          backgroundColor: 'var(--color-subtle)'
         }
       }
   }

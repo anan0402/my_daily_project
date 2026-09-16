@@ -26,7 +26,7 @@ export const FRIEND_REQUEST_STATUS = {
 function AccountProfilePage() {
   const { id } = useParams()
   const currentUser = useSelector(selectCurrentUser)
-  const {handleSendFriendRequest } = useFriendStatus()
+  const { handleSendFriendRequest, handleAcceptFriendRequest } = useFriendStatus()
 
   const { data: user, isLoading, error } = useUserDetails(id)
   const { sendRequest, acceptRequest, rejectRequest, cancelRequest, unfriend } = useFriendRequest(id)
@@ -95,10 +95,9 @@ function AccountProfilePage() {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <CustomButton
               variable="primary"
-              onClick={() => acceptRequest.mutate(user?.requestId)}
-              disabled={acceptRequest.isPending}
+              onClick={() => handleAcceptFriendRequest(id)}
             >
-              {acceptRequest.isPending ? 'Accepting...' : 'Accept Request'}
+              Accept Request
             </CustomButton>
             <CustomButton
               variable="outline"

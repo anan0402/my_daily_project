@@ -1,5 +1,5 @@
 .custom-avatar {
-  background-color: var(--app-button-color) !important;
+  background-color: var(--color-fg) !important;
   cursor: pointer;
   color: white;
   font-weight: 600;

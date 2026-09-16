@@ -5,7 +5,7 @@
 }
 
 .account-profile-card {
-  background-color: var(--app-surface-color);
+  background-color: var(--color-bg);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -16,11 +16,11 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  border-bottom: 1px solid var(--app-border-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .account-profile-title {
-  color: var(--app-text-color);
+  color: var(--color-fg);
   font-weight: 600;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .account-profile-submit {
-  background-color: var(--app-button-color) !important;
+  background-color: var(--color-fg) !important;
   color: white !important;
   padding: 10px 24px !important;
   font-weight: 600 !important;

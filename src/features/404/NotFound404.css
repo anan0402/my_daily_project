@@ -4,10 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 32px 16px;
-  background:
-    radial-gradient(circle at top left, var(--app-bg-color-light), transparent 26%),
-    radial-gradient(circle at bottom right, rgba(194, 210, 164, 0.48), transparent 30%),
-    linear-gradient(135deg, var(--app-bg-color) 0%, #d0c8bc 56%, #c2b8a8 100%);
+  background: var(--color-bg);
 }
 
 .not-found-card {
@@ -16,10 +13,10 @@
   padding: 48px 40px;
   border-radius: 24px;
   text-align: center;
-  border: 1px solid var(--app-border-color);
-  background-color: var(--app-surface-color);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
   box-shadow: 0 24px 80px rgba(73, 67, 54, 0.18);
-  color: var(--app-primary-color);
+  color: var(--color-fg);
 }
 
 .not-found-card__code {
@@ -28,7 +25,7 @@
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.06em;
-  color: var(--app-button-color);
+  color: var(--color-fg);
 }
 
 .not-found-card__title {
@@ -50,7 +47,7 @@
 }
 
 .not-found-card__link {
-  color: var(--app-primary-color);
+  color: var(--color-fg);
   cursor: pointer;
   font-weight: 600;
 }

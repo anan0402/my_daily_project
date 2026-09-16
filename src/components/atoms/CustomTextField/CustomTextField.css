@@ -5,7 +5,7 @@
 }
 
 .custom-text-field-label {
-  color: var(--app-text-color);
+  color: var(--color-fg);
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;

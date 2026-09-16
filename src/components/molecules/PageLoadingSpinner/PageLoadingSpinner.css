@@ -5,10 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at top left, var(--app-bg-color-light), transparent 26%),
-    radial-gradient(circle at bottom right, rgba(194, 210, 164, 0.48), transparent 30%),
-    linear-gradient(135deg, rgba(216, 209, 198, 0.92) 0%, rgba(208, 200, 188, 0.92) 56%, rgba(194, 184, 168, 0.92) 100%);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(2px);
 }
 
@@ -19,14 +16,14 @@
   gap: 16px;
   padding: 32px 40px;
   border-radius: 20px;
-  border: 1px solid var(--app-border-color);
-  background-color: var(--app-surface-color);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg);
   box-shadow: 0 16px 48px rgba(73, 67, 54, 0.14);
 }
 
 .page-loading-spinner__message {
   margin: 0;
-  color: var(--app-primary-color);
+  color: var(--color-fg);
   text-align: center;
   opacity: 0.9;
 }
