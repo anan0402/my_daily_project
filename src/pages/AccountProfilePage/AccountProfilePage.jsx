@@ -26,10 +26,10 @@ export const FRIEND_REQUEST_STATUS = {
 function AccountProfilePage() {
   const { id } = useParams()
   const currentUser = useSelector(selectCurrentUser)
-  const { handleSendFriendRequest, handleAcceptFriendRequest } = useFriendStatus()
+  const { handleSendFriendRequest, handleAcceptFriendRequest } = useFriendStatus(id)
 
   const { data: user, isLoading, error } = useUserDetails(id)
-  const { sendRequest, acceptRequest, rejectRequest, cancelRequest, unfriend } = useFriendRequest(id)
+  const { rejectRequest, cancelRequest, unfriend } = useFriendRequest(id)
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -73,9 +73,8 @@ function AccountProfilePage() {
           <CustomButton
             variable="primary"
             onClick={() => handleAddFriend(id)}
-            disabled={sendRequest.isPending}
           >
-            {sendRequest.isPending ? 'Sending...' : 'Add Friend'}
+            Add Friend
           </CustomButton>
         )
 
@@ -84,9 +83,8 @@ function AccountProfilePage() {
           <CustomButton
             variable="outline"
             onClick={() => cancelRequest.mutate(user?.requestId)}
-            disabled={cancelRequest.isPending}
           >
-            {cancelRequest.isPending ? 'Canceling...' : 'Cancel Request'}
+            Cancel Request
           </CustomButton>
         )
 
@@ -95,14 +93,15 @@ function AccountProfilePage() {
           <Box sx={{ display: 'flex', gap: 2 }}>
             <CustomButton
               variable="primary"
-              onClick={() => handleAcceptFriendRequest(id)}
+              onClick={() => {
+                handleAcceptFriendRequest(id)}
+              }
             >
               Accept Request
             </CustomButton>
             <CustomButton
               variable="outline"
               onClick={() => rejectRequest.mutate(user?.requestId)}
-              disabled={rejectRequest.isPending}
               sx={{ color: 'error.main', borderColor: 'error.main' }}
             >
               {rejectRequest.isPending ? 'Rejecting...' : 'Reject'}
@@ -115,10 +114,9 @@ function AccountProfilePage() {
           <CustomButton
             variable="outline"
             onClick={() => unfriend.mutate(user?.friendshipId)}
-            disabled={unfriend.isPending}
             sx={{ color: 'error.main', borderColor: 'error.main' }}
           >
-            {unfriend.isPending ? 'Unfriending...' : 'Unfriend'}
+            Unfriend
           </CustomButton>
         )
 

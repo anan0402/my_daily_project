@@ -35,6 +35,7 @@
 .custom-autocomplete-search-box .MuiOutlinedInput-input::placeholder {
   color: var(--color-fg);
   opacity: 0.5;
+  font-family: var(--font-mono);
 }
 
 .custom-autocomplete-search-box .search-icon {
@@ -63,7 +64,7 @@
 .custom-autocomplete-search-box .MuiAutocomplete-paper {
   background-color: var(--color-bg) !important;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--color-shadow-medium);
 }
 
 .custom-autocomplete-search-box .MuiAutocomplete-listbox {

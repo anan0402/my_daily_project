@@ -1,21 +1,22 @@
 import { useState, useRef, useEffect } from 'react'
 
-import CustomButton from '@/components/atoms/CustomButton/CustomButton'
 import './OTP.css'
 
 function OTP({
   length = 8,
   onSubmit,
   onResend,
+  onBack,
   isSubmitting = false,
-  submitLabel = 'Xác thực',
-  submittingLabel = 'Đang xác thực...',
-  resendPrompt = 'Chưa nhận được mã?',
-  resendLabel = 'Gửi lại OTP',
+  submitLabel = 'Verify',
+  submittingLabel = 'Verifying...',
+  resendLabel = 'Resend code',
+  backLabel = 'Back',
   initialResendCountdown = 60,
   disabled = false,
 }) {
   const [otp, setOtp] = useState(() => Array(length).fill(''))
+  const [error, setError] = useState(false)
   const [resendCountdown, setResendCountdown] = useState(initialResendCountdown)
   const [canResend, setCanResend] = useState(false)
   const inputRefs = useRef([])
@@ -36,6 +37,7 @@ function OTP({
   const handleOtpChange = (index, value) => {
     if (value && !/^\d$/.test(value)) return
 
+    setError(false)
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
@@ -53,9 +55,9 @@ function OTP({
 
   const handlePaste = (e) => {
     e.preventDefault()
-    const pastedData = e.clipboardData.getData('text').slice(0, length)
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, length)
 
-    if (!/^\d+$/.test(pastedData)) return
+    if (!pastedData) return
 
     const newOtp = [...otp]
     for (let i = 0; i < pastedData.length && i < length; i++) {
@@ -71,12 +73,16 @@ function OTP({
     e.preventDefault()
     const otpCode = otp.join('')
 
-    if (otpCode.length !== length) return
+    if (otpCode.length !== length) {
+      setError(true)
+      return
+    }
 
     onSubmit(otpCode)
   }
 
   const handleResendOtp = async () => {
+    if (!canResend) return
     try {
       await onResend()
       setResendCountdown(initialResendCountdown)
@@ -102,37 +108,46 @@ function OTP({
               value={digit}
               onChange={(e) => handleOtpChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              className="otp-input"
+              onFocus={(e) => e.target.select()}
+              className={`otp-input${digit ? ' otp-input--filled' : ''}${error ? ' otp-input--error' : ''}`}
               autoFocus={index === 0}
               disabled={disabled || isSubmitting}
             />
           ))}
         </div>
 
-        <CustomButton
+        {error && (
+          <p className="otp-error-message">
+            Please enter all {length} digits.
+          </p>
+        )}
+
+        <button
           type="submit"
-          size="large"
-          fullWidth
-          variable="primary"
-          disabled={disabled || isSubmitting || otp.join('').length !== length}
+          className="otp-submit-button"
+          disabled={disabled || isSubmitting}
         >
           {isSubmitting ? submittingLabel : submitLabel}
-        </CustomButton>
+        </button>
       </form>
 
-      <div className="resend-otp-section">
-        <p className="resend-otp-text">
-          {resendPrompt}{' '}
-          {canResend ? (
-            <span className="resend-otp-link" onClick={handleResendOtp}>
-              {resendLabel}
-            </span>
-          ) : (
-            <span className="resend-otp-countdown">
-              Gửi lại sau {resendCountdown}s
-            </span>
-          )}
-        </p>
+      <div className="otp-actions">
+        {onBack && (
+          <button type="button" className="otp-back-button" onClick={onBack}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {backLabel}
+          </button>
+        )}
+        <button
+          type="button"
+          className="otp-resend-button"
+          onClick={handleResendOtp}
+          disabled={!canResend}
+        >
+          {canResend ? resendLabel : `Resend in ${resendCountdown}s`}
+        </button>
       </div>
     </>
   )

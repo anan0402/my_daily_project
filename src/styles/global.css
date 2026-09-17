@@ -13,11 +13,37 @@ body,
   --color-bg: #fff;
   --color-fg: #000;
   --color-muted: #bbb;
-  --color-subtle: #999;
+  --color-subtle: #767575;
   --color-border: #f0f0f0;
   --color-border-strong: #e8e8e8;
   --color-surface-hover: #f9f9f9;
   --color-shadow: rgba(0, 0, 0, 0.08);
+  --color-error: #FF4444;
+  --color-bg-muted: rgba(255, 255, 255, 0.6);
+
+  /* Additional colors */
+  --color-text-secondary: #666;
+  --color-text-tertiary: #999;
+  --color-text-placeholder: #a0a0a0;
+  --color-primary: #1976d2;
+  --color-success: #4caf50;
+  --color-scrollbar: #888;
+  --color-scrollbar-hover: var(--color-subtle);
+  --color-scrollbar-track: var(--color-border);
+  --color-input-disabled: var(--color-border-strong);
+  --color-input-bg: var(--color-surface-hover);
+  --color-message-received: var(--color-border);
+  --color-message-received-text: var(--color-fg);
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-overlay-light: rgba(0, 0, 0, 0.05);
+  --color-shadow-medium: rgba(0, 0, 0, 0.15);
+  --color-shadow-strong: rgba(0, 0, 0, 0.2);
+  --color-white-overlay: rgba(255, 255, 255, 0.08);
+  --color-white-overlay-hover: rgba(255, 255, 255, 0.15);
+  --color-alert-error-bg: rgba(244, 67, 54, 0.08);
+  --color-alert-error-text: #b71c1c;
+  --color-card-shadow: rgba(73, 67, 54, 0.18);
+  --color-card-shadow-light: rgba(73, 67, 54, 0.14);
 
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Inter', sans-serif;

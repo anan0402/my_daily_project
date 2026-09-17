@@ -1,23 +1,46 @@
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useFriends } from '@/hooks'
-import { sendFriendRequestSocket, acceptFriendRequestSocket } from '../services/friendService'
+import {
+  sendFriendRequestSocket,
+  acceptFriendRequestSocket,
+  subscribeToFriendRequests
+} from '../services/friendService'
 
 /**
- * Custom hook for accessing friend data
- * Note: Socket subscriptions for online/offline status are now handled globally in App.jsx
- * via useGlobalSocketSubscriptions hook
+ * Custom hook for accessing friend data and socket subscriptions
  *
+ * @param {string} targetUserId - Optional target user ID to invalidate on accept
  * @returns {object} Friend data and loading state
  */
-export const useFriendStatus = () => {
+export const useFriendStatus = (targetUserId) => {
   const { data: friends = [], isLoading: loading } = useFriends()
+  const queryClient = useQueryClient()
 
-  const handleSendFriendRequest = (targetUserId) => {
-    console.log('hell')
-    sendFriendRequestSocket(targetUserId)
+  useEffect(() => {
+    if (!targetUserId) return
+
+    const unsubscribe = subscribeToFriendRequests({
+      // When send friend request success -> refetch user details
+      onFriendRequestSent: () => {
+        queryClient.refetchQueries({ queryKey: ['userDetails', targetUserId] })
+      },
+      // When accept friend request success -> refetch user details & friends
+      onFriendRequestAccepted: () => {
+        queryClient.refetchQueries({ queryKey: ['userDetails', targetUserId] })
+        queryClient.refetchQueries({ queryKey: ['friends'] })
+      }
+    })
+
+    return unsubscribe
+  }, [queryClient, targetUserId])
+
+  const handleSendFriendRequest = (userId) => {
+    sendFriendRequestSocket(userId)
   }
 
-  const handleAcceptFriendRequest = (targetUserId) => {
-    acceptFriendRequestSocket(targetUserId)
+  const handleAcceptFriendRequest = (id) => {
+    acceptFriendRequestSocket(id)
   }
 
   return {

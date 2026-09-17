@@ -64,6 +64,7 @@
 
 .todo-add-input::placeholder {
   color: var(--color-muted);
+  font-family: var(--font-mono);
 }
 
 .todo-add-button {

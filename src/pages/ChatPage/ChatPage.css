@@ -22,7 +22,7 @@
 }
 
 .chat-back-button {
-  color: #1976d2;
+  color: var(--color-primary);
 }
 
 .chat-header-info {
@@ -40,7 +40,7 @@
 }
 
 .chat-status {
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 12px;
   line-height: 1;
 }
@@ -86,14 +86,14 @@
 }
 
 .chat-messages-area::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--color-scrollbar-track);
 }
 
 .chat-messages-area::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--color-scrollbar);
   border-radius: 3px;
 }
 
 .chat-messages-area::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--color-scrollbar-hover);
 }

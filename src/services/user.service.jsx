@@ -20,17 +20,6 @@ export const updateUserProfile = async (id) => {
   return response.data
 }
 
-/**
- * Send friend request
- * @param {string} targetUserId - Target user ID
- * @returns {Promise} Friend request response
- */
-export const sendFriendRequest = async (targetUserId) => {
-  const response = await authorizeAxiosInstance.post(`/v1/friends/send-request`, { 
-    targetUserId: targetUserId 
-  })
-  return response.data
-}
 
 /**
  * Cancel sent friend request
@@ -42,18 +31,6 @@ export const cancelFriendRequest = async (requestId) => {
   return response.data
 }
 
-
-/**
- * Accept friend request
- * @param {string} requestId - User ID who sent the request
- * @returns {Promise} Accept response
- */
-export const acceptFriendRequest = async (requestId) => {
-  const response = await authorizeAxiosInstance.post(`/v1/friends/accept-request`, {
-    requestId: requestId
-  })
-  return response.data
-}
 
 /**
  * Reject friend request

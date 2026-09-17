@@ -7,7 +7,7 @@
 .account-profile-card {
   background-color: var(--color-bg);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px var(--color-shadow);
 }
 
 .account-profile-header {
@@ -39,7 +39,7 @@
 
 .account-profile-submit {
   background-color: var(--color-fg) !important;
-  color: white !important;
+  color: var(--color-bg) !important;
   padding: 10px 24px !important;
   font-weight: 600 !important;
   text-transform: none !important;
@@ -49,7 +49,7 @@
 
 .account-profile-submit:hover {
   opacity: 0.9;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 8px var(--color-shadow-medium) !important;
 }
 
 .account-profile-loading,

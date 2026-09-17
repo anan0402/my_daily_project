@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-bg-muted);
   backdrop-filter: blur(2px);
 }
 
@@ -18,7 +18,7 @@
   border-radius: 20px;
   border: 1px solid var(--color-border);
   background-color: var(--color-bg);
-  box-shadow: 0 16px 48px rgba(73, 67, 54, 0.14);
+  box-shadow: 0 16px 48px var(--color-card-shadow-light);
 }
 
 .page-loading-spinner__message {

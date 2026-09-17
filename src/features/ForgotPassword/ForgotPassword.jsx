@@ -1,4 +1,3 @@
-import Link from '@mui/material/Link'
 import { useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
@@ -6,27 +5,25 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
-import IconButton from '@mui/material/IconButton'
-import InputAdornment from '@mui/material/InputAdornment'
 
-import CustomButton from '@/components/atoms/CustomButton/CustomButton'
-import CustomTextField from '@/components/atoms/CustomTextField/CustomTextField'
-import SimpleCardLayout from '@/components/templates/SimpleCardLayout/SimpleCardLayout'
+import PawIcon from '@/components/atoms/PawIcon/PawIcon'
+import Text from '@/components/atoms/Text/Text'
 import OTP from '@/components/molecules/OTP/OTP'
 import { forgotPassword, verifyForgotPasswordOtp, resetPassword, resendOtpChangePassword } from '@/services/auth.service'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { showErrorToast, showSuccessToast } from '@/components/atoms/CustomToast'
+import './ForgotPassword.css'
 
 const emailValidationMessages = {
-  emailRequired: 'Vui lòng nhập email',
-  emailInvalid: 'Email không hợp lệ',
+  emailRequired: 'Please enter your email',
+  emailInvalid: 'Invalid email address',
 }
 
 const passwordValidationMessages = {
-  passwordRequired: 'Vui lòng nhập mật khẩu mới',
-  passwordMin: 'Mật khẩu tối thiểu 6 ký tự',
-  confirmPasswordRequired: 'Vui lòng xác nhận mật khẩu',
-  passwordMatch: 'Mật khẩu xác nhận không khớp',
+  passwordRequired: 'Please enter a new password',
+  passwordMin: 'Password must be at least 6 characters',
+  confirmPasswordRequired: 'Please confirm your password',
+  passwordMatch: 'Passwords do not match',
 }
 
 const emailSchema = yup.object({
@@ -82,10 +79,10 @@ function ForgotPassword() {
     try {
       await forgotPassword({ email: formValues.email })
       setEmail(formValues.email)
-      showSuccessToast('Mã OTP đã được gửi đến email của bạn.')
+      showSuccessToast('OTP has been sent to your email.')
       setStep('otp')
     } catch (error) {
-      const message = getErrorMessage(error, 'Không thể gửi mã OTP. Vui lòng thử lại.')
+      const message = getErrorMessage(error, 'Unable to send OTP. Please try again.')
       showErrorToast(message)
     }
   }
@@ -94,10 +91,10 @@ function ForgotPassword() {
     setIsSubmittingOtp(true)
     try {
       await verifyForgotPasswordOtp({ email, otp: otpCode })
-      showSuccessToast('Xác thực OTP thành công.')
+      showSuccessToast('OTP verified successfully.')
       setStep('password')
     } catch (error) {
-      const message = getErrorMessage(error, 'Mã OTP không chính xác hoặc đã hết hạn.')
+      const message = getErrorMessage(error, 'Invalid or expired OTP.')
       showErrorToast(message)
     } finally {
       setIsSubmittingOtp(false)
@@ -107,9 +104,9 @@ function ForgotPassword() {
   const handleResendOtp = async () => {
     try {
       await resendOtpChangePassword({ email })
-      showSuccessToast('Mã OTP mới đã được gửi đến email của bạn.')
+      showSuccessToast('A new OTP has been sent to your email.')
     } catch (error) {
-      const message = getErrorMessage(error, 'Không thể gửi lại mã OTP. Vui lòng thử lại sau.')
+      const message = getErrorMessage(error, 'Unable to resend OTP. Please try again later.')
       showErrorToast(message)
       throw error
     }
@@ -118,10 +115,10 @@ function ForgotPassword() {
   const onSubmitPassword = async (formValues) => {
     try {
       await resetPassword({ newPassword: formValues.newPassword })
-      showSuccessToast('Đặt lại mật khẩu thành công.')
+      showSuccessToast('Password reset successfully.')
       navigate('/login')
     } catch (error) {
-      const message = getErrorMessage(error, 'Không thể đặt lại mật khẩu. Vui lòng thử lại.')
+      const message = getErrorMessage(error, 'Unable to reset password. Please try again.')
       showErrorToast(message)
     }
   }
@@ -129,163 +126,232 @@ function ForgotPassword() {
   // Step 1: Email Entry
   if (step === 'email') {
     return (
-      <SimpleCardLayout
-        title="Quên mật khẩu"
-        description="Nhập email của bạn để nhận mã OTP khôi phục mật khẩu"
-      >
-        <form
-          onSubmit={handleSubmitEmail(onSubmitEmail)}
-          noValidate
-          style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
-        >
-          <CustomTextField
-            fullWidth
-            label="Email"
-            type="email"
-            required
-            placeholder="ban@congty.com"
-            error={Boolean(emailErrors.email)}
-            helperText={emailErrors.email?.message}
-            {...registerEmail('email')}
-          />
+      <div className="forgot-password-layout">
+        {/* Left panel */}
+        <div className="forgot-password-sidebar">
+          <RouterLink to="/" className="forgot-password-sidebar__logo">
+            <PawIcon />
+            <span className="forgot-password-sidebar__logo-text">Daily days</span>
+          </RouterLink>
+          <div className="forgot-password-sidebar__content">
+            <Text variant="subheading" color="var(--color-bg)" style={{ marginBottom: 16 }}>
+              We'll get you back in.
+            </Text>
+            <Text variant="body" color="var(--color-bg-muted)">
+              Enter your email and we'll send you an OTP.
+            </Text>
+          </div>
+        </div>
 
-          <CustomButton
-            type="submit"
-            size="large"
-            fullWidth
-            variable="primary"
-            disabled={isSubmittingEmail}
-          >
-            {isSubmittingEmail ? 'Đang gửi...' : 'Gửi mã OTP'}
-          </CustomButton>
-        </form>
+        {/* Right panel */}
+        <div className="forgot-password-main">
+          <RouterLink to="/" className="forgot-password-mobile-logo">
+            <PawIcon />
+            <Text variant="body" style={{ fontWeight: 600 }}>Daily days</Text>
+          </RouterLink>
 
-        <p className="simple-card__footer">
-          Nhớ mật khẩu?{' '}
-          <Link component={RouterLink} to="/login" underline="none">
-            <span className="simple-card__link">Đăng nhập</span>
-          </Link>
-        </p>
-      </SimpleCardLayout>
+          <div className="forgot-password-form-container">
+            <Text variant="subheading" style={{ marginBottom: 4 }}>Forgot password?</Text>
+            <Text variant="body" color="var(--color-muted)" style={{ marginBottom: 32 }}>
+              No worries. Enter your email below.
+            </Text>
+
+            <form onSubmit={handleSubmitEmail(onSubmitEmail)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="forgot-password-field">
+                <Text as="label" variant="label" color="var(--color-subtle)">Email</Text>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  autoFocus
+                  className="forgot-password-field__input"
+                  {...registerEmail('email')}
+                />
+                {emailErrors.email && (
+                  <Text variant="caption" color="var(--color-error)" style={{ marginTop: 4 }}>{emailErrors.email.message}</Text>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                className="forgot-password-submit-button"
+                disabled={isSubmittingEmail}
+              >
+                {isSubmittingEmail ? 'Sending...' : 'Send OTP'}
+              </button>
+            </form>
+
+            <button
+              type="button"
+              className="forgot-password-back-button"
+              onClick={() => navigate('/login')}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Back to sign in
+            </button>
+          </div>
+        </div>
+      </div>
     )
   }
 
   // Step 2: OTP Verification
   if (step === 'otp') {
     return (
-      <SimpleCardLayout
-        title="Xác thực OTP"
-        description={
-          <>
-            Nhập mã OTP 8 số đã được gửi đến email <strong>{email}</strong>
-          </>
-        }
-      >
-        <OTP
-          onSubmit={handleVerifyOtp}
-          onResend={handleResendOtp}
-          isSubmitting={isSubmittingOtp}
-          submitLabel="Xác thực"
-          submittingLabel="Đang xác thực..."
-        />
+      <div className="forgot-password-layout">
+        {/* Left panel */}
+        <div className="forgot-password-sidebar">
+          <RouterLink to="/" className="forgot-password-sidebar__logo">
+            <PawIcon />
+            <span className="forgot-password-sidebar__logo-text">Daily days</span>
+          </RouterLink>
+          <div className="forgot-password-sidebar__content">
+            <Text variant="subheading" color="var(--color-bg)" style={{ marginBottom: 16 }}>
+              One-time code. One-time only.
+            </Text>
+            <Text variant="body" color="var(--color-bg-muted)">
+              Check your email for the 8-digit code.
+            </Text>
+          </div>
+        </div>
 
-        <p className="simple-card__footer">
-          Nhớ mật khẩu?{' '}
-          <Link component={RouterLink} to="/login" underline="none">
-            <span className="simple-card__link">Đăng nhập</span>
-          </Link>
-        </p>
-      </SimpleCardLayout>
+        {/* Right panel */}
+        <div className="forgot-password-main">
+          <RouterLink to="/" className="forgot-password-mobile-logo">
+            <PawIcon />
+            <Text variant="body" style={{ fontWeight: 600 }}>Daily days</Text>
+          </RouterLink>
+
+          <div className="forgot-password-form-container">
+            <Text variant="subheading" style={{ marginBottom: 4 }}>Enter code</Text>
+            <Text variant="body" color="var(--color-muted)" style={{ marginBottom: 32 }}>
+              We sent an 8-digit code to your email.
+            </Text>
+
+            <OTP
+              onSubmit={handleVerifyOtp}
+              onResend={handleResendOtp}
+              onBack={() => setStep('email')}
+              isSubmitting={isSubmittingOtp}
+              submitLabel="Verify"
+              submittingLabel="Verifying..."
+              backLabel="Back"
+              resendLabel="Resend code"
+            />
+          </div>
+        </div>
+      </div>
     )
   }
 
   // Step 3: Reset Password
   return (
-    <SimpleCardLayout
-      title="Đặt lại mật khẩu"
-      description="Nhập mật khẩu mới cho tài khoản của bạn"
-    >
-      <form
-        onSubmit={handleSubmitPassword(onSubmitPassword)}
-        noValidate
-        style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
-      >
-        <CustomTextField
-          fullWidth
-          label="Mật khẩu mới"
-          required
-          type={showNewPassword ? 'text' : 'password'}
-          placeholder="Nhập mật khẩu mới"
-          error={Boolean(passwordErrors.newPassword)}
-          helperText={passwordErrors.newPassword?.message}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={() => setShowNewPassword((prev) => !prev)}
-                    aria-label={showNewPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                  >
-                    <FontAwesomeIcon
-                      icon={showNewPassword ? faEyeSlash : faEye}
-                      style={{ fontSize: 14 }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-          {...registerPassword('newPassword')}
-        />
+    <div className="forgot-password-layout">
+      {/* Left panel */}
+      <div className="forgot-password-sidebar">
+        <RouterLink to="/" className="forgot-password-sidebar__logo">
+          <PawIcon />
+          <span className="forgot-password-sidebar__logo-text">Daily days</span>
+        </RouterLink>
+        <div className="forgot-password-sidebar__content">
+          <Text variant="subheading" color="var(--color-bg)" style={{ marginBottom: 16 }}>
+            Set a new password.
+          </Text>
+          <Text variant="body" color="var(--color-bg-muted)">
+            Enter a new password for your account.
+          </Text>
+        </div>
+      </div>
 
-        <CustomTextField
-          fullWidth
-          label="Xác nhận mật khẩu mới"
-          required
-          type={showConfirmPassword ? 'text' : 'password'}
-          placeholder="Nhập lại mật khẩu mới"
-          error={Boolean(passwordErrors.confirmPassword)}
-          helperText={passwordErrors.confirmPassword?.message}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={() => setShowConfirmPassword((prev) => !prev)}
-                    aria-label={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-                  >
-                    <FontAwesomeIcon
-                      icon={showConfirmPassword ? faEyeSlash : faEye}
-                      style={{ fontSize: 14 }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-          {...registerPassword('confirmPassword')}
-        />
+      {/* Right panel */}
+      <div className="forgot-password-main">
+        <RouterLink to="/" className="forgot-password-mobile-logo">
+          <PawIcon />
+          <Text variant="body" style={{ fontWeight: 600 }}>Daily days</Text>
+        </RouterLink>
 
-        <CustomButton
-          type="submit"
-          size="large"
-          fullWidth
-          variable="primary"
-          disabled={isSubmittingPassword}
-        >
-          {isSubmittingPassword ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
-        </CustomButton>
-      </form>
+        <div className="forgot-password-form-container">
+          <Text variant="subheading" style={{ marginBottom: 4 }}>Reset password</Text>
+          <Text variant="body" color="var(--color-muted)" style={{ marginBottom: 32 }}>
+            Enter a new password for your account.
+          </Text>
 
-      <p className="simple-card__footer">
-        Nhớ mật khẩu?{' '}
-        <Link component={RouterLink} to="/login" underline="none">
-          <span className="simple-card__link">Đăng nhập</span>
-        </Link>
-      </p>
-    </SimpleCardLayout>
+          <form onSubmit={handleSubmitPassword(onSubmitPassword)} noValidate style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="forgot-password-field forgot-password-password-field">
+              <Text as="label" variant="label" color="var(--color-subtle)">New password</Text>
+              <div className="forgot-password-password-input-wrapper">
+                <input
+                  type={showNewPassword ? 'text' : 'password'}
+                  placeholder="Enter new password"
+                  className="forgot-password-field__input"
+                  {...registerPassword('newPassword')}
+                />
+                <button
+                  type="button"
+                  className="forgot-password-password-toggle"
+                  onClick={() => setShowNewPassword((prev) => !prev)}
+                  aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                >
+                  <FontAwesomeIcon
+                    icon={showNewPassword ? faEyeSlash : faEye}
+                    style={{ fontSize: 14 }}
+                  />
+                </button>
+              </div>
+              {passwordErrors.newPassword && (
+                <Text variant="caption" color="var(--color-error)" style={{ marginTop: 4 }}>{passwordErrors.newPassword.message}</Text>
+              )}
+            </div>
+
+            <div className="forgot-password-field forgot-password-password-field">
+              <Text as="label" variant="label" color="var(--color-subtle)">Confirm new password</Text>
+              <div className="forgot-password-password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Re-enter new password"
+                  className="forgot-password-field__input"
+                  {...registerPassword('confirmPassword')}
+                />
+                <button
+                  type="button"
+                  className="forgot-password-password-toggle"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  <FontAwesomeIcon
+                    icon={showConfirmPassword ? faEyeSlash : faEye}
+                    style={{ fontSize: 14 }}
+                  />
+                </button>
+              </div>
+              {passwordErrors.confirmPassword && (
+                <Text variant="caption" color="var(--color-error)" style={{ marginTop: 4 }}>{passwordErrors.confirmPassword.message}</Text>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="forgot-password-submit-button"
+              disabled={isSubmittingPassword}
+            >
+              {isSubmittingPassword ? 'Resetting...' : 'Reset password'}
+            </button>
+          </form>
+
+          <button
+            type="button"
+            className="forgot-password-back-button"
+            onClick={() => navigate('/login')}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M8 2L4 6l4 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Back to sign in
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -1,7 +1,7 @@
 .custom-avatar {
   background-color: var(--color-fg) !important;
   cursor: pointer;
-  color: white;
+  color: var(--color-bg);
   font-weight: 600;
 }
 
@@ -53,7 +53,7 @@
   right: 0;
   width: 10px;
   height: 10px;
-  background-color: #4caf50;
-  border: 2px solid #ffffff;
+  background-color: var(--color-success);
+  border: 2px solid var(--color-bg);
   border-radius: 50%;
 }

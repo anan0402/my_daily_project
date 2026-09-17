@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectSocketStatus } from '@/redux/socketSlice/socketSlice'
 import { selectActiveChatUser, setActiveChatUser } from '@/redux/chatSlice/chatSlice'
-import { subscribeToFriendStatus } from '../services/friendService'
+import { subscribeToFriendStatus, subscribeToFriendRequests } from '../services/friendService'
 
 /**
  * Global socket subscriptions that should always be active after login
@@ -20,7 +20,20 @@ export const useGlobalSocketSubscriptions = () => {
       return
     }
 
-    const unsubscribe = subscribeToFriendStatus({
+    // Subscribe to friend request accepted event
+    const unsubscribeFriendRequests = subscribeToFriendRequests({
+      onFriendRequestAccepted: (data) => {
+        // Update user details to change relationshipStatus to 'friend'
+        if (data?.targetUserId) {
+          queryClient.invalidateQueries({ queryKey: ['userDetails', data.targetUserId] })
+        }
+        // Refresh friends list
+        queryClient.invalidateQueries({ queryKey: ['friends'] })
+      }
+    })
+
+    // Subscribe to friend status events
+    const unsubscribeFriendStatus = subscribeToFriendStatus({
       onFriendOnline: (data) => {
         // Handle both single object and array of objects
         const userIds = Array.isArray(data)
@@ -97,7 +110,10 @@ export const useGlobalSocketSubscriptions = () => {
       }
     })
 
-    return unsubscribe
+    return () => {
+      unsubscribeFriendRequests()
+      unsubscribeFriendStatus()
+    }
   }, [isSocketConnected, activeChatUser])
 
   

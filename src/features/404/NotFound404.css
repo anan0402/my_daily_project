@@ -15,7 +15,7 @@
   text-align: center;
   border: 1px solid var(--color-border);
   background-color: var(--color-bg);
-  box-shadow: 0 24px 80px rgba(73, 67, 54, 0.18);
+  box-shadow: 0 24px 80px var(--color-card-shadow);
   color: var(--color-fg);
 }
 

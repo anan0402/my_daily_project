@@ -13,10 +13,10 @@ export const sendFriendRequestSocket = (targetUserId) => {
 
 /**
  * Accept a friend request
- * @param {string} targetUserId - Friend request ID
+ * @param {string} id - Can be friend request ID or sender's user ID
  */
-export const acceptFriendRequestSocket = (targetUserId) => {
-  emitEvent(FRIEND_REQUEST_EVENTS.ACCEPT_FRIEND_REQUEST, { targetUserId })
+export const acceptFriendRequestSocket = (id) => {
+  emitEvent(FRIEND_REQUEST_EVENTS.ACCEPT_FRIEND_REQUEST, { id })
 }
 
 /**

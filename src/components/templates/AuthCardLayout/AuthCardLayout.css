@@ -70,7 +70,7 @@
 .auth-layout__tagline-subtitle {
   font-size: 14px;
   font-family: var(--font-sans);
-  color: #666;
+  color: var(--color-text-secondary);
   margin: 0;
 }
 
@@ -157,6 +157,7 @@
 
 .auth-layout__form .auth-input::placeholder {
   color: var(--color-muted);
+  font-family: var(--font-mono);
 }
 
 .auth-layout__form .auth-input:focus {
@@ -164,7 +165,7 @@
 }
 
 .auth-layout__form .auth-input--error {
-  border-bottom-color: #d32f2f;
+  border-bottom-color: var(--color-error);
 }
 
 .auth-layout__form .auth-input-wrapper {
@@ -199,7 +200,7 @@
 .auth-layout__form .auth-error {
   font-size: 12px;
   font-family: var(--font-sans);
-  color: #d32f2f;
+  color: var(--color-error);
   margin-top: 6px;
 }
 
