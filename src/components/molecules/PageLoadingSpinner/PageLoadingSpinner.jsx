@@ -13,7 +13,7 @@ function PageLoadingSpinner({ message, size = 48 }) {
       role="status"
       aria-live="polite"
       aria-busy="true"
-      aria-label={message || 'Đang tải'}
+      aria-label={message || 'Loading'}
     >
       <div className="page-loading-spinner__content">
         <CircularProgress size={size} sx={{ color: 'var(--color-fg)' }} />

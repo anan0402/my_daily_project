@@ -14,7 +14,7 @@ import './CustomAutocompleteSearchBox.css'
  * @param {Function} onQueryChange - Callback when search query changes. If provided, parent controls search (external). If not provided, local filtering is used.
  * @param {boolean} loading - Loading state (only used when onQueryChange is provided)
  * @param {Function} onSelect - Callback when an option is selected
- * @param {string} placeholder - Placeholder text (default: 'Tìm kiếm...')
+ * @param {string} placeholder - Placeholder text (default: 'Search...')
  * @param {number} debounceDelay - Debounce delay in ms (default: 500)
  * @param {Function} getOptionLabel - Function to extract label from option (default: option => option.label)
  * @param {Function} renderOption - Custom render function for each option item in dropdown. Signature: (props, option) => ReactNode
@@ -37,7 +37,7 @@ function CustomAutocompleteSearchBox({
   onQueryChange,
   loading = false,
   onSelect,
-  placeholder = 'Tìm kiếm...',
+  placeholder = 'Search...',
   debounceDelay = 500,
   getOptionLabel = (option) => option?.label || '',
   renderOption,
@@ -135,9 +135,9 @@ function CustomAutocompleteSearchBox({
       noOptionsText={
         isExternalSearch
           ? inputValue
-            ? 'Không tìm thấy kết quả'
-            : 'Nhập để tìm kiếm'
-          : 'Không tìm thấy kết quả'
+            ? 'No results found'
+            : 'Type to search'
+          : 'No results found'
       }
       {...props}
     />

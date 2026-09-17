@@ -129,7 +129,7 @@ function AppHeader({ showSidebar = false }) {
                 loading={isLoading}
                 onQueryChange={setSearchQuery}
                 onSelect={handleSearchSelect}
-                placeholder="Tìm kiếm..."
+                placeholder="Search..."
                 getOptionLabel={(option) => option?.username || ''}
                 renderOption={renderSearchOption}
               />
@@ -247,10 +247,10 @@ function AppHeader({ showSidebar = false }) {
         )}
         <ConfirmDialog
           open={openConfirm}
-          title="Xác nhận đăng xuất"
-          message="Bạn chắc chắn muốn đăng xuất?"
-          confirmText="Đăng xuất"
-          cancelText="Hủy"
+          title="Confirm logout"
+          message="Are you sure you want to log out?"
+          confirmText="Log out"
+          cancelText="Cancel"
           onConfirm={handleConfirmLogout}
           onCancel={() => setOpenConfirm(false)}
         />
@@ -264,7 +264,7 @@ function AppHeader({ showSidebar = false }) {
           <Box className="search-drawer-content">
             <Box className="search-drawer-header">
               <Text variant="h6" className="search-drawer-title">
-                Tìm kiếm
+                Search
               </Text>
             </Box>
             <Box className="search-drawer-body">
@@ -273,7 +273,7 @@ function AppHeader({ showSidebar = false }) {
                 loading={isLoading}
                 onQueryChange={setSearchQuery}
                 onSelect={handleSearchSelect}
-                placeholder="Tìm kiếm..."
+                placeholder="Search..."
                 getOptionLabel={(option) => option?.username || ''}
                 renderOption={renderSearchOption}
                 sx={{ width: '100%' }}

@@ -12,11 +12,11 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 import { showErrorToast, showSuccessToast } from '../../components/atoms/CustomToast'
 
 const validationMessages = {
-  nameRequired: 'Vui lòng nhập họ và tên',
-  emailRequired: 'Vui lòng nhập email',
-  emailInvalid: 'Email không hợp lệ',
-  passwordRequired: 'Vui lòng nhập mật khẩu',
-  passwordMin: 'Mật khẩu tối thiểu 6 ký tự'
+  nameRequired: 'Please enter your full name',
+  emailRequired: 'Please enter your email',
+  emailInvalid: 'Invalid email address',
+  passwordRequired: 'Please enter your password',
+  passwordMin: 'Password must be at least 6 characters'
 }
 
 const signupSchema = yup.object({
@@ -47,13 +47,13 @@ function SignupPage() {
   const onSubmit = async (formValues) => {
     try {
       await registerAccount(formValues)
-      showSuccessToast('Đăng ký tài khoản thành công. Vui lòng kiểm tra email để lấy mã OTP.')
+      showSuccessToast('Account created successfully. Please check your email for OTP code.')
       navigate(`/account/verification?email=${encodeURIComponent(formValues.email)}`)
     } catch (error) {
-      const errorMessage = getErrorMessage(error, 'Đăng ký thất bại!')
+      const errorMessage = getErrorMessage(error, 'Sign up failed!')
 
-      if (error.response?.status === 409 || errorMessage.includes('đã tồn tại')) {
-        showErrorToast('Email đã được đăng ký. Chuyển đến trang xác thực...')
+      if (error.response?.status === 409 || errorMessage.includes('already exists')) {
+        showErrorToast('Email already registered. Redirecting to verification...')
         navigate(`/account/verification?email=${encodeURIComponent(formValues.email)}`)
       } else {
         showErrorToast(errorMessage)

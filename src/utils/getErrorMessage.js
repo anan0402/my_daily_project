@@ -1,4 +1,4 @@
-export const getErrorMessage = (error, fallbackMessage = 'Có lỗi xảy ra, vui lòng thử lại sau.') => {
+export const getErrorMessage = (error, fallbackMessage = 'An error occurred. Please try again later.') => {
   if (!error) return fallbackMessage
 
   if (typeof error === 'string') return error

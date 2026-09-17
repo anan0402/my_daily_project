@@ -17,10 +17,10 @@ import {
 import { loginUserAPI, loginWithGoogleAPI } from "../../redux/userSlice/userSlice";
 
 const validationMessages = {
-  emailRequired: "Vui lòng nhập email",
-  emailInvalid: "Email không hợp lệ",
-  passwordRequired: "Vui lòng nhập mật khẩu",
-  passwordMin: "Mật khẩu tối thiểu 6 ký tự",
+  emailRequired: "Please enter your email",
+  emailInvalid: "Invalid email address",
+  passwordRequired: "Please enter your password",
+  passwordMin: "Password must be at least 6 characters",
 };
 
 const loginSchema = yup.object({
@@ -55,11 +55,11 @@ function LoginPage() {
     try {
       const res = await dispatch(loginUserAPI(formValues)).unwrap();
       if (res) {
-        showSuccessToast("Đăng nhập thành công!");
+        showSuccessToast("Login successful!");
         navigate("/");
       }
     } catch (error) {
-      const errorMessage = getErrorMessage(error, "Đăng nhập thất bại!");
+      const errorMessage = getErrorMessage(error, "Login failed!");
       showErrorToast(errorMessage);
     }
   };
@@ -68,11 +68,11 @@ function LoginPage() {
     try {
       const res = await dispatch(loginWithGoogleAPI(credentialResponse)).unwrap();
       if (res) {
-        showSuccessToast("Đăng nhập thành công!");
+        showSuccessToast("Login successful!");
         navigate("/");
       }
     } catch (error) {
-      const errorMessage = getErrorMessage(error, "Đăng nhập thất bại!");
+      const errorMessage = getErrorMessage(error, "Login failed!");
       showErrorToast(errorMessage);
     }
   };

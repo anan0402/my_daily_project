@@ -19,9 +19,9 @@ function AccountVerification() {
     try {
       await verifyAccount({ email, otp: otpCode })
       setStatus('success')
-      showSuccessToast('Xác thực thành công.')
+      showSuccessToast('Verification successful.')
     } catch (error) {
-      const message = getErrorMessage(error, 'Mã OTP không chính xác hoặc đã hết hạn.')
+      const message = getErrorMessage(error, 'Invalid or expired OTP code.')
       showErrorToast(message)
     } finally {
       setIsSubmitting(false)
@@ -31,9 +31,9 @@ function AccountVerification() {
   const handleResendOtp = async () => {
     try {
       await resendOtp({ email })
-      showSuccessToast('Mã OTP mới đã được gửi đến email của bạn.')
+      showSuccessToast('A new OTP code has been sent to your email.')
     } catch (error) {
-      const message = getErrorMessage(error, 'Không thể gửi lại mã OTP. Vui lòng thử lại sau.')
+      const message = getErrorMessage(error, 'Unable to resend OTP. Please try again later.')
       showErrorToast(message)
       throw error
     }
@@ -49,10 +49,10 @@ function AccountVerification() {
 
   return (
     <SimpleCardLayout
-      title="Xác thực tài khoản"
+      title="Verify your account"
       description={
         <>
-          Nhập mã OTP 8 số đã được gửi đến email <strong>{email}</strong>
+          Enter the 8-digit OTP code sent to <strong>{email}</strong>
         </>
       }
     >
@@ -63,9 +63,9 @@ function AccountVerification() {
       />
 
       <p className="simple-card__footer">
-        Đã có tài khoản?{' '}
+        Already have an account?{' '}
         <Link component={RouterLink} to="/login" underline="none">
-          <span className="simple-card__link">Đăng nhập</span>
+          <span className="simple-card__link">Sign in</span>
         </Link>
       </p>
     </SimpleCardLayout>
