@@ -1,10 +1,15 @@
 import { io } from 'socket.io-client'
 import { environment } from '../utils/environment'
 import { COMMON_EVENTS } from '../utils/constants'
+import { getSocketTicket } from '../services/auth.service'
 import { setSocketConnected, setSocketDisconnected } from '../redux/socketSlice/socketSlice'
 
 let socket = null
 let storeInstance = null
+let authRetryCount = 0
+let authRetryTimer = null
+
+const MAX_AUTH_RETRIES = 3
 
 // Inject store reference to avoid circular dependency
 export const injectSocketStore = (store) => {
@@ -16,16 +21,25 @@ export const initSocket = () => {
     return socket
   }
 
-  socket = io(environment.apiBaseUrl, {
+  // Socket nối thẳng tới backend (cross-site) nên cookie không được gửi kèm.
+  // Thay vào đó mỗi lần connect/reconnect sẽ xin một vé mới sống 2 phút.
+  // socket.io gọi callback này trước MỌI lần thử kết nối, nên vé không bao giờ cũ.
+  socket = io(environment.socketUrl, {
     withCredentials: true,
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
-    reconnectionAttempts: 5
+    reconnectionAttempts: 5,
+    auth: (cb) => {
+      getSocketTicket()
+        .then((ticket) => cb({ token: ticket }))
+        .catch(() => cb({}))
+    }
   })
 
   socket.on(COMMON_EVENTS.CONNECT, () => {
     // console.log('✅ Socket connected:', socket.id)
+    authRetryCount = 0
     if (storeInstance) {
       storeInstance.dispatch(setSocketConnected(socket.id))
     }
@@ -38,8 +52,25 @@ export const initSocket = () => {
     }
   })
 
-  socket.on(COMMON_EVENTS.CONNECTION_ERROR, (error) => {
+  socket.on(COMMON_EVENTS.CONNECT_ERROR, (error) => {
     console.error('Socket connection error:', error)
+
+    // socket.active === false nghĩa là middleware auth ở server từ chối; trong
+    // trường hợp này socket.io KHÔNG tự reconnect, phải tự gọi lại. Thử lại có
+    // giới hạn để tránh vòng lặp vô hạn khi user đã thực sự hết phiên.
+    if (socket && !socket.active && authRetryCount < MAX_AUTH_RETRIES) {
+      authRetryCount += 1
+
+      // Giữ lại đúng instance đang lỗi: nếu user logout rồi login lại trước khi
+      // timer bắn, initSocket() đã tạo socket khác và không được đụng vào nó.
+      const retryingSocket = socket
+
+      clearTimeout(authRetryTimer)
+      authRetryTimer = setTimeout(() => {
+        authRetryTimer = null
+        if (socket === retryingSocket) socket.connect()
+      }, 1000 * authRetryCount)
+    }
   })
 
   return socket
@@ -47,6 +78,10 @@ export const initSocket = () => {
 
 
 export const disconnectSocket = () => {
+  clearTimeout(authRetryTimer)
+  authRetryTimer = null
+  authRetryCount = 0
+
   if (socket) {
     socket.disconnect()
     socket = null
