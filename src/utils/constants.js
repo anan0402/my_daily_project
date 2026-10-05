@@ -72,9 +72,6 @@ export const COMMON_EVENTS = {
   CONNECT: 'connect',
   DISCONNECT: 'disconnect',
   ERROR: 'error',
-  // 'connection_error' là event của engine.io phía SERVER.
-  // Client của socket.io phát ra 'connect_error' - dùng đúng tên này ở FE.
-  CONNECT_ERROR: 'connect_error',
   CONNECTION_ERROR: 'connection_error',
 }
 

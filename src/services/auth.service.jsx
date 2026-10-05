@@ -52,16 +52,6 @@ export const refreshToken = async () => {
 }
 
 
-/**
- * Xin vé ngắn hạn (2 phút) để mở kết nối Socket.IO.
- * Request này đi qua proxy nên mang theo cookie httpOnly; vé trả về trong body
- * để JS truyền vào handshake của socket.
- */
-export const getSocketTicket = async () => {
-  const response = await authorizeAxiosInstance.get('/v1/users/socket-ticket')
-  return response.data?.ticket
-}
-
 export const loginWithGoogle = async ({ credential }) => {
   const response = await authorizeAxiosInstance.post('/v1/users/login-with-google', {
     credential
