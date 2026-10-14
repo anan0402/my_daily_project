@@ -83,14 +83,33 @@ Complete authentication system with:
 
 ## 5. Token Management
 
-**Location:** `/src/utils/authorizeAxiosInstance.js`
+**Location:** `/src/utils/authorizeAxiosInstance.js`, `/src/utils/tokenStorage.js`
+
+> **Đã bỏ httpOnly cookie.** FE và BE không cùng domain nên cookie server set là
+> third-party cookie và bị Chrome/Safari chặn (dù có `SameSite=None; Secure`).
+> Token giờ nằm ở Web Storage và được FE gắn tay vào header.
 
 ### Configuration
 ```javascript
 baseURL: environment.apiBaseUrl
 timeout: 10 minutes
-withCredentials: true  // HTTP-only cookies
+withCredentials: false  // không dùng cookie nữa, phải khớp với credentials: false ở CORS của BE
 ```
+
+### Nơi lưu token
+| Token | Storage | Lý do |
+|-------|---------|-------|
+| `accessToken` | `localStorage` | Phải sống qua F5, qua đóng/mở browser, dùng chung mọi tab |
+| `refreshToken` | `localStorage` | Dài hạn (14 ngày), tương đương maxAge của cookie cũ |
+| `resetPasswordToken` | `sessionStorage` | Chỉ dùng trong 1 luồng quên mật khẩu của đúng tab đó, sống 2 phút |
+
+### Cách token được gửi lên BE
+| Request | Cách gửi |
+|---------|----------|
+| Mọi API cần auth | Header `Authorization: Bearer <accessToken>` (request interceptor tự gắn) |
+| `POST /v1/users/refresh-token` | Body `{ refreshToken }` |
+| `POST /v1/users/reset-password` | Header `x-reset-password-token` |
+| Socket.IO handshake | `io(url, { auth: { token } })` |
 
 ### Response Interceptor
 | Status | Action |
@@ -208,13 +227,20 @@ else → Render children
 
 ## 11. Security Features
 
-- ✅ HTTP-only cookies for tokens
 - ✅ Automatic token refresh on 410
-- ✅ Logout on 401 (invalid token)
+- ✅ Logout on 401 (invalid token) + clear localStorage
 - ✅ Password min 6 characters
 - ✅ OTP email verification
 - ✅ Socket connects only when authenticated
-- ✅ Secure state persistence (no tokens in localStorage)
+- ✅ `resetPasswordToken` ở `sessionStorage` nên không sống quá phiên làm việc
+
+### ⚠️ Đánh đổi đã biết
+- ❌ **Không còn httpOnly cookie** → token đọc được bằng JS nên **không chống được XSS**.
+  Đây là hệ quả bắt buộc của việc FE/BE khác domain. Muốn quay lại httpOnly cookie thì
+  phải đưa 2 bên về cùng site (`app.domain.com` + `api.domain.com`, cookie set cho
+  `.domain.com`) hoặc cho FE proxy request qua chính domain của nó.
+- Vì vậy: phải escape mọi nội dung do user nhập, không `dangerouslySetInnerHTML` với
+  dữ liệu chưa làm sạch, và hạn chế script bên thứ ba.
 
 ---
 

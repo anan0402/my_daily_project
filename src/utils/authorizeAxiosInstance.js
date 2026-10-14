@@ -3,6 +3,7 @@ import axios from "axios";
 import { environment } from "./environment";
 import { logoutUserAPI } from "../redux/userSlice/userSlice";
 import { refreshToken } from "../services/auth.service";
+import { getAccessToken, clearAuthTokens } from "./tokenStorage";
 
 let authStore = null
 
@@ -13,11 +14,32 @@ export const injectStore = (store) => {
 let authorizeAxiosInstance = axios.create();
 authorizeAxiosInstance.defaults.baseURL = environment.apiBaseUrl;
 authorizeAxiosInstance.defaults.timeout = 1000 * 60 * 10;
-authorizeAxiosInstance.defaults.withCredentials = true;
 
+/**
+ * ❌ CÁCH CŨ - gửi httpOnly cookie kèm mỗi request:
+ *    authorizeAxiosInstance.defaults.withCredentials = true;
+ *
+ * Lý do bỏ: FE/BE khác domain -> cookie là third-party cookie, browser chặn.
+ *
+ * ✅ CÁCH MỚI: để false và tự gắn accessToken (lấy từ localStorage) vào header
+ * Authorization ở request interceptor bên dưới.
+ * Lưu ý: giá trị này phải khớp với `credentials` trong cors config của BE,
+ * lệch nhau là browser block response.
+ */
+authorizeAxiosInstance.defaults.withCredentials = false;
 
 
 authorizeAxiosInstance.interceptors.request.use((config) => {
+
+    /**
+     * ✅ Thay cho việc browser tự đính cookie: đọc accessToken từ localStorage
+     * và gắn vào header "Authorization: Bearer <token>".
+     * BE đọc header này ở authMiddleware.isAuthenticated.
+     */
+    const accessToken = getAccessToken();
+    if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+    }
 
     return config;
 });
@@ -29,6 +51,9 @@ authorizeAxiosInstance.interceptors.response.use(
     (error) => {
         
         if (error.response?.status === 401) {
+            // Token không hợp lệ -> xoá localStorage rồi mới logout.
+            // (Trước đây server tự clearCookie, giờ FE phải tự dọn.)
+            clearAuthTokens();
             authStore.dispatch(logoutUserAPI());
         }
         
@@ -37,11 +62,14 @@ authorizeAxiosInstance.interceptors.response.use(
             originalRequest._retry = true;
 
             if(!refreshTokenPromise) {
+                // refreshToken() tự đọc refreshToken từ localStorage, gửi lên BE
+                // và ghi accessToken mới vào localStorage.
                 refreshTokenPromise = refreshToken()
                 .then((res)=>{
                     return res
                 })
                 .catch((error) => {
+                    clearAuthTokens();
                     authStore.dispatch(logoutUserAPI());
                     return Promise.reject(error.response || error);
                 })
@@ -50,6 +78,8 @@ authorizeAxiosInstance.interceptors.response.use(
                 });
             }
             return refreshTokenPromise.then(() => {
+                // Gọi lại qua instance nên request interceptor chạy lại và
+                // gắn accessToken MỚI vào header, không cần sửa tay header ở đây.
                 return authorizeAxiosInstance(originalRequest);
             });
         }

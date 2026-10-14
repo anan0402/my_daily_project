@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client'
 import { environment } from '../utils/environment'
+import { getAccessToken } from '../utils/tokenStorage'
 import { COMMON_EVENTS } from '../utils/constants'
 import { setSocketConnected, setSocketDisconnected } from '../redux/socketSlice/socketSlice'
 
@@ -17,11 +18,30 @@ export const initSocket = () => {
   }
 
   socket = io(environment.apiBaseUrl, {
-    withCredentials: true,
+    /**
+     * ❌ CÁCH CŨ - dựa vào cookie trong handshake:
+     *    withCredentials: true
+     * BE parse accessToken từ handshake.headers.cookie. Không dùng được nữa vì
+     * FE/BE khác domain -> cookie cross-site bị browser chặn, header cookie rỗng.
+     *
+     * ✅ CÁCH MỚI: đọc accessToken từ localStorage và gửi qua handshake auth.
+     * BE đọc ở socketAuthMiddleware: socket.handshake.auth.token
+     */
+    withCredentials: false,
+    auth: { token: getAccessToken() },
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionAttempts: 5
+  })
+
+  /**
+   * Quan trọng: `auth` chỉ được đọc 1 lần lúc tạo socket. Nếu accessToken được
+   * refresh (interceptor 410) thì lần reconnect sau vẫn gửi token cũ đã hết hạn
+   * -> bị từ chối. Nên gán lại token mới nhất trước mỗi lần reconnect.
+   */
+  socket.io.on('reconnect_attempt', () => {
+    socket.auth = { token: getAccessToken() }
   })
 
   socket.on(COMMON_EVENTS.CONNECT, () => {
