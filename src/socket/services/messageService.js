@@ -1,4 +1,9 @@
-import { emitEvent, subscribeToEvent } from '../socket'
+import {
+  emitEvent,
+  subscribeToEvent,
+  trackJoinedConversation,
+  untrackJoinedConversation
+} from '../socket'
 import { MESSAGE_EVENTS } from '@/utils/constants'
 
 // ==================== Message Services ====================
@@ -8,6 +13,9 @@ import { MESSAGE_EVENTS } from '@/utils/constants'
  * @param {string} conversationId - Room/Chat ID
  */
 export const joinConversation = (conversationId) => {
+  // Nhớ room trước khi emit, để socket.js join lại được sau mỗi lần reconnect
+  // (server xoá sạch room của socket cũ khi kết nối bị ngắt)
+  trackJoinedConversation(conversationId)
   emitEvent(MESSAGE_EVENTS.JOIN_CONVERSATION, { conversationId })
 }
 
@@ -16,6 +24,7 @@ export const joinConversation = (conversationId) => {
  * @param {string} conversationId - Room/Chat ID
  */
 export const leaveConversation = (conversationId) => {
+  untrackJoinedConversation(conversationId)
   emitEvent(MESSAGE_EVENTS.LEAVE_CONVERSATION, { conversationId })
 }
 
