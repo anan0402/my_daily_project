@@ -4,6 +4,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectSocketStatus } from '@/redux/socketSlice/socketSlice'
 import { selectActiveChatUser, setActiveChatUser } from '@/redux/chatSlice/chatSlice'
 import { subscribeToFriendStatus, subscribeToFriendRequests } from '../services/friendService'
+import { joinNotifications, subscribeToNotifications } from '../services/notificationService'
+import {
+  prependNotificationToCache,
+  setUnreadCountCache,
+  UNREAD_COUNT_QUERY_KEY
+} from '@/hooks/useNotifications'
 
 /**
  * Global socket subscriptions that should always be active after login
@@ -19,6 +25,23 @@ export const useGlobalSocketSubscriptions = () => {
     if (!isSocketConnected) {
       return
     }
+
+    // Notification: list lấy qua REST, socket chỉ push item mới vào cache
+    joinNotifications()
+
+    const unsubscribeNotifications = subscribeToNotifications({
+      onNewNotification: (notification) => {
+        if (!notification?._id) return
+
+        prependNotificationToCache(queryClient, notification)
+        // Badge: server gửi kèm unread_count, nhưng invalidate cho chắc
+        // nếu panel chưa từng được mở
+        queryClient.invalidateQueries({ queryKey: UNREAD_COUNT_QUERY_KEY })
+      },
+      onUnreadCount: ({ count }) => {
+        if (typeof count === 'number') setUnreadCountCache(queryClient, count)
+      }
+    })
 
     // Subscribe to friend request accepted event
     const unsubscribeFriendRequests = subscribeToFriendRequests({
@@ -111,6 +134,7 @@ export const useGlobalSocketSubscriptions = () => {
     })
 
     return () => {
+      unsubscribeNotifications()
       unsubscribeFriendRequests()
       unsubscribeFriendStatus()
     }

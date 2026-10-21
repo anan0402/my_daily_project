@@ -10,12 +10,6 @@ export {
 export {
   // Notification services
   joinNotifications,
-  markNotificationRead,
-  markAllNotificationsRead,
-  getUnreadCount,
-  getNotifications,
-  deleteNotification,
-  clearAllNotifications,
   subscribeToNotifications,
   // Message services
   joinRoom,
@@ -32,4 +26,4 @@ export {
 } from './services'
 
 // Hooks
-export { useNotifications, useMessages, useFriendStatus } from './hooks'
+export { useMessages, useFriendStatus } from './hooks'

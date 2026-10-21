@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '@/redux/userSlice/userSlice'
 import { useUserDetails, useFriendRequest } from '@/hooks'
 import DefaultLayout from '@/components/templates/DefaultLayout/DefaultLayout'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import CircularProgress from '@mui/material/CircularProgress'
 import Text from '@/components/atoms/Text/Text'
 import CustomTextField from '@/components/atoms/CustomTextField/CustomTextField'
@@ -23,8 +21,16 @@ export const FRIEND_REQUEST_STATUS = {
   FRIEND: 'friend'
 }
 
+const RELATIONSHIP_LABELS = {
+  [FRIEND_REQUEST_STATUS.NONE]: 'Not connected',
+  [FRIEND_REQUEST_STATUS.PENDING_SENT]: 'Request sent',
+  [FRIEND_REQUEST_STATUS.PENDING_RECEIVED]: 'Awaiting your reply',
+  [FRIEND_REQUEST_STATUS.FRIEND]: 'Friend'
+}
+
 function AccountProfilePage() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
   const { handleSendFriendRequest, handleAcceptFriendRequest } = useFriendStatus(id)
 
@@ -49,10 +55,10 @@ function AccountProfilePage() {
     }
   }, [user])
 
-
-  const handleAddFriend = (targetUserId) =>{
+  const handleAddFriend = (targetUserId) => {
     handleSendFriendRequest(targetUserId)
   }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -72,6 +78,7 @@ function AccountProfilePage() {
         return (
           <CustomButton
             variable="primary"
+            className="account-profile-action"
             onClick={() => handleAddFriend(id)}
           >
             Add Friend
@@ -82,6 +89,7 @@ function AccountProfilePage() {
         return (
           <CustomButton
             variable="outline"
+            className="account-profile-action"
             onClick={() => cancelRequest.mutate(user?.requestId)}
           >
             Cancel Request
@@ -90,19 +98,19 @@ function AccountProfilePage() {
 
       case FRIEND_REQUEST_STATUS.PENDING_RECEIVED:
         return (
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box className="account-profile-action-group">
             <CustomButton
               variable="primary"
-              onClick={() => {
-                handleAcceptFriendRequest(id)}
-              }
+              className="account-profile-action"
+              onClick={() => handleAcceptFriendRequest(id)}
             >
               Accept Request
             </CustomButton>
             <CustomButton
               variable="outline"
+              className="account-profile-action"
               onClick={() => rejectRequest.mutate(user?.requestId)}
-              sx={{ color: 'error.main', borderColor: 'error.main' }}
+              sx={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}
             >
               {rejectRequest.isPending ? 'Rejecting...' : 'Reject'}
             </CustomButton>
@@ -113,8 +121,9 @@ function AccountProfilePage() {
         return (
           <CustomButton
             variable="outline"
+            className="account-profile-action"
             onClick={() => unfriend.mutate(user?.friendshipId)}
-            sx={{ color: 'error.main', borderColor: 'error.main' }}
+            sx={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}
           >
             Unfriend
           </CustomButton>
@@ -139,85 +148,142 @@ function AccountProfilePage() {
     return (
       <DefaultLayout>
         <Box className="account-profile-error">
-          <Text variant="h6" color="error">
+          <Text variant="subheading" style={{ color: 'var(--color-error)' }}>
             Error loading profile
           </Text>
-          <Text color="error">{error.message}</Text>
+          <Text variant="body" style={{ color: 'var(--color-subtle)' }}>
+            {error.message}
+          </Text>
         </Box>
       </DefaultLayout>
     )
   }
 
-
   return (
     <DefaultLayout>
       <Box className="account-profile-container">
-        <Card className="account-profile-card">
-          <CardContent>
-            <Box className="account-profile-header">
-              <div className ="account-profile-avatar">
-                <CustomAvatar
-                  src={getAvatarSrc(user?.avatar || user?.picture)}
-                  size="large"
-                  fallback={user?.username?.[0] || user?.email?.[0]}
-                />
-                <Text variant="h4" className="account-profile-title">
+        <button
+          type="button"
+          className="account-profile-back"
+          onClick={() => navigate(-1)}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path
+              d="M8 2L4 6l4 4"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <Text variant="mono" as="span" className="account-profile-back-text">Back</Text>
+        </button>
+
+        <Box className="account-profile-intro">
+          <Text variant="label" as="p" className="account-profile-eyebrow">
+            {isOwnProfile ? 'Account' : 'Member'}
+          </Text>
+          <Text variant="heading" as="h1" className="account-profile-heading">
+            {isOwnProfile ? 'Profile' : (user?.username || user?.email)}
+          </Text>
+        </Box>
+
+        <Box className="account-profile-grid">
+          <Box component="aside" className="account-profile-aside">
+            <Box className="account-profile-identity">
+              <CustomAvatar
+                src={getAvatarSrc(user?.avatar || user?.picture)}
+                size="large"
+                fallback={user?.username?.[0] || user?.email?.[0]}
+                className="account-profile-avatar"
+              />
+              <Box className="account-profile-identity-text">
+                <Text variant="mono" as="p" className="account-profile-name">
                   {user?.username || user?.email}
                 </Text>
-              </div>
-              {!isOwnProfile && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                <Text variant="caption" as="p" className="account-profile-email">
+                  {user?.email}
+                </Text>
+              </Box>
+            </Box>
+
+            {!isOwnProfile && (
+              <>
+                <Box className="account-profile-status">
+                  <span className="account-profile-status-dot" />
+                  <Text variant="caption" as="span">
+                    {RELATIONSHIP_LABELS[user?.relationshipStatus] || 'Unknown'}
+                  </Text>
+                </Box>
+                <Box className="account-profile-aside-actions">
                   {renderFriendRequestButtons(user)}
                 </Box>
-              )}
-            </Box>
+              </>
+            )}
+          </Box>
 
-            <Box component="form" onSubmit={handleSubmit} className="account-profile-form">
-              <CustomTextField
-                fullWidth
-                label="Username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                disabled={!isOwnProfile}
-              />
+          <Box className="account-profile-main">
+            <Box component="section" className="account-profile-section">
+              <Text variant="subheading" as="h2" className="account-profile-section-title">
+                {isOwnProfile ? 'Personal details' : 'Details'}
+              </Text>
+              <Text variant="body" as="p" className="account-profile-section-desc">
+                {isOwnProfile
+                  ? 'Update how your information appears across the app.'
+                  : 'Public information shared by this member.'}
+              </Text>
 
-              <CustomTextField
-                fullWidth
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email}
-                disabled
-              />
-
-              {isOwnProfile && !isGoogleUser && (
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                className="account-profile-form"
+              >
                 <CustomTextField
                   fullWidth
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={formData.password}
+                  label="Username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
-                  placeholder="Enter new password"
-                  helperText="Leave blank to keep current password"
+                  disabled={!isOwnProfile}
                 />
-              )}
 
-              {isOwnProfile && (
-                <Box className="account-profile-actions">
-                  <CustomButton
-                    type="submit"
-                    variable="primary"
-                    className="account-profile-submit"
-                  >
-                    Save Changes
-                  </CustomButton>
-                </Box>
-              )}
+                <CustomTextField
+                  fullWidth
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  disabled
+                />
+
+                {isOwnProfile && !isGoogleUser && (
+                  <CustomTextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter new password"
+                    helperText="Leave blank to keep current password"
+                  />
+                )}
+
+                {isOwnProfile && (
+                  <Box className="account-profile-actions">
+                    <CustomButton
+                      type="submit"
+                      variable="primary"
+                      className="account-profile-submit"
+                    >
+                      Save changes
+                    </CustomButton>
+                  </Box>
+                )}
+              </Box>
             </Box>
-          </CardContent>
-        </Card>
+          </Box>
+        </Box>
       </Box>
     </DefaultLayout>
   )

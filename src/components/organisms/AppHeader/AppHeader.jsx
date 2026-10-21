@@ -14,6 +14,7 @@ import CustomAutocompleteSearchBox from '@/components/atoms/CustomAutocompleteSe
 import CustomAvatar from '@/components/atoms/CustomAvatar/CustomAvatar'
 import PawIcon from '@/components/atoms/PawIcon'
 import ConfirmDialog from '@/components/molecules/ConfirmDialog/ConfirmDialog'
+import NotificationMenu from '@/components/organisms/NotificationMenu/NotificationMenu'
 import { useSearch } from '@/hooks/useSearch'
 import './AppHeader.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -153,6 +154,7 @@ function AppHeader({ showSidebar = false }) {
         {currentUser ? (
           <>
             <div className="app-header-right">
+              <NotificationMenu />
               {showSidebar && (
                 <IconButton
                   onClick={handleToggleSidebar}

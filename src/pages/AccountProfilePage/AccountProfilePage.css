@@ -1,57 +1,227 @@
 .account-profile-container {
-  max-width: 800px;
+  max-width: 880px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 56px 24px 96px;
 }
 
-.account-profile-card {
-  background-color: var(--color-bg);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px var(--color-shadow);
+/* ---------- Back link ---------- */
+.account-profile-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 40px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-subtle);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.account-profile-header {
+.account-profile-back:hover {
+  opacity: 0.5;
+}
+
+.account-profile-back-text {
+  font-size: 0.75rem;
+  color: var(--color-subtle);
+}
+
+/* ---------- Page heading ---------- */
+.account-profile-intro {
+  margin-bottom: 56px;
+}
+
+.account-profile-eyebrow {
+  margin-bottom: 14px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.3em;
+  color: var(--color-subtle);
+}
+
+.account-profile-heading {
+  font-size: 3rem;
+  letter-spacing: -0.05em;
+  color: var(--color-fg);
+  word-break: break-word;
+}
+
+/* ---------- Two column grid ---------- */
+.account-profile-grid {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 64px;
+}
+
+/* ---------- Aside ---------- */
+.account-profile-aside {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  border-bottom: 1px solid var(--color-border);
+  align-items: flex-start;
 }
 
-.account-profile-title {
-  color: var(--color-fg);
+.account-profile-identity {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.account-profile-avatar {
+  width: 96px !important;
+  height: 96px !important;
+  font-size: 36px !important;
+  border-radius: 50% !important;
+  margin-bottom: 20px;
+}
+
+.account-profile-identity-text {
+  min-width: 0;
+}
+
+.account-profile-name {
+  margin-bottom: 4px;
   font-weight: 600;
+  color: var(--color-fg);
+  word-break: break-word;
 }
 
+.account-profile-email {
+  color: var(--color-subtle);
+  word-break: break-all;
+}
+
+.account-profile-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  color: var(--color-subtle);
+}
+
+.account-profile-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--color-fg);
+}
+
+.account-profile-aside-actions {
+  margin-top: 24px;
+  width: 100%;
+}
+
+.account-profile-action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.account-profile-main {
+  min-width: 0;
+}
+
+/* ---------- Sections ---------- */
+.account-profile-section + .account-profile-section {
+  margin-top: 48px;
+  padding-top: 48px;
+  border-top: 1px solid var(--color-border);
+}
+
+.account-profile-section-title {
+  margin-bottom: 8px;
+  color: var(--color-fg);
+}
+
+.account-profile-section-desc {
+  margin-bottom: 36px;
+  color: var(--color-subtle);
+}
+
+/* ---------- Form: underline inputs ---------- */
 .account-profile-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding-top: 24px;
+  gap: 28px;
 }
 
+.account-profile-form .custom-text-field-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+  margin-bottom: 4px;
+}
+
+.account-profile-form .MuiOutlinedInput-notchedOutline {
+  border: none !important;
+}
+
+.account-profile-form .MuiOutlinedInput-root {
+  border-radius: 0;
+  border-bottom: 1px solid var(--color-border-strong);
+  transition: border-color 0.2s ease;
+}
+
+.account-profile-form .MuiOutlinedInput-root:hover,
+.account-profile-form .MuiOutlinedInput-root.Mui-focused {
+  border-bottom-color: var(--color-fg);
+}
+
+.account-profile-form .MuiOutlinedInput-root.Mui-disabled {
+  border-bottom-style: dashed;
+  border-bottom-color: var(--color-border);
+}
+
+.account-profile-form .MuiOutlinedInput-input {
+  padding: 8px 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--color-fg);
+}
+
+.account-profile-form .MuiOutlinedInput-input.Mui-disabled {
+  -webkit-text-fill-color: var(--color-subtle);
+}
+
+.account-profile-form .MuiFormHelperText-root {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-subtle);
+}
+
+/* ---------- Buttons ---------- */
 .account-profile-actions {
   display: flex;
-  justify-content: flex-end;
-  padding-top: 8px;
+  justify-content: flex-start;
+  padding-top: 4px;
 }
 
-.account-profile-submit {
-  background-color: var(--color-fg) !important;
-  color: var(--color-bg) !important;
-  padding: 10px 24px !important;
+.account-profile-submit,
+.account-profile-action {
+  font-family: var(--font-mono) !important;
+  font-size: 0.6875rem !important;
   font-weight: 600 !important;
-  text-transform: none !important;
-  border-radius: 8px !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
+  padding: 12px 28px !important;
+}
+
+.account-profile-action {
+  width: 100%;
+  padding: 10px 18px !important;
 }
 
 .account-profile-submit:hover {
-  opacity: 0.9;
-  box-shadow: 0 2px 8px var(--color-shadow-medium) !important;
+  opacity: 0.85;
+  box-shadow: none !important;
 }
 
+/* ---------- States ---------- */
 .account-profile-loading,
 .account-profile-error {
   display: flex;
@@ -59,19 +229,115 @@
   align-items: center;
   justify-content: center;
   min-height: 400px;
-  gap: 16px;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
 }
 
-.account-profile-avatar{
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 16px;
-  gap: 16px;
-}
+/* ---------- Tablet / mobile: single column ---------- */
 @media (max-width: 768px) {
+  .account-profile-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .account-profile-aside {
+    width: 100%;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Avatar và tên nằm ngang để tiết kiệm chiều cao */
+  .account-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .account-profile-identity .custom-avatar-container {
+    flex: none;
+  }
+
+  .account-profile-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    font-size: 30px !important;
+    margin-bottom: 0;
+  }
+
+  .account-profile-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .account-profile-email {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: normal;
+  }
+
+  .account-profile-status {
+    margin-top: 24px;
+  }
+
+  .account-profile-section + .account-profile-section {
+    margin-top: 40px;
+    padding-top: 40px;
+  }
+}
+
+/* ---------- Mobile: spacing + vùng chạm ---------- */
+@media (max-width: 640px) {
+  /* DefaultLayout (.default-layout-main) đã có padding 24px,
+     nên bỏ padding ngang ở đây để gutter mobile không bị 44px */
   .account-profile-container {
-    padding: 16px;
+    padding: 28px 0 64px;
+  }
+
+  .account-profile-back {
+    min-height: 40px;
+    margin-bottom: 32px;
+  }
+
+  .account-profile-intro {
+    margin-bottom: 40px;
+  }
+
+  .account-profile-heading {
+    font-size: 2.25rem;
+  }
+
+  .account-profile-section-desc {
+    margin-bottom: 28px;
+  }
+
+  .account-profile-form {
+    gap: 24px;
+  }
+
+  .account-profile-form .MuiOutlinedInput-input {
+    padding: 10px 0;
+    font-size: 1rem; /* >=16px để iOS Safari không auto-zoom khi focus */
+  }
+
+  .account-profile-actions {
+    padding-top: 8px;
+  }
+
+  .account-profile-submit {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .account-profile-action {
+    min-height: 44px;
+  }
+
+  .account-profile-loading,
+  .account-profile-error {
+    min-height: 280px;
   }
 }

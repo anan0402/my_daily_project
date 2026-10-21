@@ -1,12 +1,6 @@
 // Notification services
 export {
   joinNotifications,
-  markNotificationRead,
-  markAllNotificationsRead,
-  getUnreadCount,
-  getNotifications,
-  deleteNotification,
-  clearAllNotifications,
   subscribeToNotifications
 } from './notificationService'
 
