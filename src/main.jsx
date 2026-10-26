@@ -1,36 +1,13 @@
 import { createRoot } from "react-dom/client";
-import App from "./app/App.jsx";
-import "./styles/global.css";
-import { store } from "./redux/store.js";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { persistStore } from "redux-persist";
-import { injectStore } from "./utils/authorizeAxiosInstance.js";
-import { injectSocketStore } from "./socket/socket.js";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { queryClient } from "./lib/queryClient.js";
-import environment from "./utils/environment.js";
 
-const persistor = persistStore(store);
-
-//Inject store to authorizeAxiosInstance vì authorizeAxiosInstance không phải là componenet file nên không thể sử dụng useSelector
-injectStore(store);
-
-//Inject store to socket để dispatch Redux actions
-injectSocketStore(store);
+import App from "@/app";
+import AppProvider from "@/app/provider";
+import "@/styles/global.css";
 
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-  <GoogleOAuthProvider clientId={environment.googleClientId}>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <QueryClientProvider client={queryClient}>
-          <App />
-        </QueryClientProvider>
-      </PersistGate>
-    </Provider>
-  </GoogleOAuthProvider>,
+  <AppProvider>
+    <App />
+  </AppProvider>,
   // </StrictMode>,
 );
