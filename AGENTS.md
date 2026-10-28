@@ -58,7 +58,7 @@ Features contain `api/` and `components/`. Add another folder only when a featur
 
 - **No cross-feature imports**: `features/a` must not import from `features/b`. Combine features in `src/app` (e.g. `app/routes/profile.jsx` combines users and friends; `app/layouts/default-layout` combines notifications, users search and friends).
 - **Unidirectional imports**: `shared (components, config, hooks, lib, utils, testing) → features → app`. Features cannot import from `app`; shared code cannot import from `features` or `app`.
-- Use `@/` absolute imports for anything in `src`. Parent-relative imports (`../`) are rejected; `./x.css` next to a component is fine.
+- Use `@/` absolute imports for anything in `src`. The alias is defined twice and both must stay in sync: `vite.config.js` (build) and `jsconfig.json` (editor). Parent-relative imports (`../`) are rejected; `./x.css` next to a component is fine.
 - File and folder names are kebab-case. Component names stay PascalCase (`custom-button.jsx` exports `CustomButton`). Shared components keep the `custom-` prefix where the plain name would collide with MUI (`Button`, `Avatar`, `TextField`, `Checkbox`).
 - Features have no barrel files: import the file directly (`@/features/chat/api/get-messages`). Shared components in `components/ui` and `components/layouts` each have an `index.js` (`@/components/ui/custom-button`).
 - Navigate with `paths` from `@/config/paths` (`paths.app.profile.getHref(id)`), never a hand-written URL.
@@ -89,7 +89,9 @@ Exceptions:
 
 - `lib/socket.js` owns the connection: `initSocket`, `disconnectSocket`, `subscribeToEvent`, `emitEvent`, and re-joins conversation rooms after every reconnect. Event names are in `utils/constants.js`.
 - Each feature wraps its own events in `features/<feature>/api/<name>-socket.js` (`message-socket.js`, `friend-socket.js`, `notification-socket.js`). `subscribeTo*` functions return an unsubscribe function.
-- Socket events that touch several features' caches are handled in `app/use-global-socket-subscriptions.js`.
+- Subscriptions that only touch one feature's cache live in that feature as a hook (`features/notifications/hooks/use-notification-subscriptions.js`, `features/friends/hooks/use-friend-status-subscriptions.js`), with the cache helper next to the query options (`prependNotificationToCache`, `setFriendsOnlineStatus`).
+- `app/use-global-socket-subscriptions.js` calls those hooks and handles only the events that touch several features' caches. Keep it that way so it doesn't grow with every feature.
+- Read Redux state that a handler needs at event time (`useStore().getState()`) instead of adding it to the effect's deps, otherwise every change unsubscribes and resubscribes.
 
 ## State
 
