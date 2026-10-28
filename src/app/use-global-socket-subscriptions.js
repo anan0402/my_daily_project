@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux'
 
 import { subscribeToFriendRequests } from '@/features/friends/api/friend-socket'
 import { getFriendsQueryOptions } from '@/features/friends/api/get-friends'
+import { getReceivedFriendRequestsQueryOptions } from '@/features/friends/api/get-received-friend-requests'
 import { useFriendStatusSubscriptions } from '@/features/friends/hooks/use-friend-status-subscriptions'
 import { useNotificationSubscriptions } from '@/features/notifications/hooks/use-notification-subscriptions'
 import { getUserQueryOptions } from '@/features/users/api/get-user'
@@ -23,14 +24,21 @@ export const useGlobalSocketSubscriptions = () => {
   useNotificationSubscriptions()
   useFriendStatusSubscriptions()
 
-  // friends + users: chấp nhận lời mời -> đổi relationshipStatus của user và list bạn bè
+  // friends + users: người kia gửi / chấp nhận lời mời -> đổi relationshipStatus và list bạn bè.
+  // Thao tác của chính mình thì mutation tự invalidate.
   useEffect(() => {
     if (!isSocketConnected) return
 
     return subscribeToFriendRequests({
-      onFriendRequestAccepted: (data) => {
-        if (data?.targetUserId) {
-          queryClient.invalidateQueries({ queryKey: getUserQueryOptions(data.targetUserId).queryKey })
+      onFriendRequestReceived: ({ sender } = {}) => {
+        queryClient.invalidateQueries({ queryKey: getReceivedFriendRequestsQueryOptions().queryKey })
+        if (sender?._id) {
+          queryClient.invalidateQueries({ queryKey: getUserQueryOptions(sender._id).queryKey })
+        }
+      },
+      onFriendRequestAcceptedNotification: ({ friend } = {}) => {
+        if (friend?._id) {
+          queryClient.invalidateQueries({ queryKey: getUserQueryOptions(friend._id).queryKey })
         }
         queryClient.invalidateQueries({ queryKey: getFriendsQueryOptions().queryKey })
       }

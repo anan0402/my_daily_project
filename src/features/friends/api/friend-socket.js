@@ -1,47 +1,23 @@
-import { emitEvent, subscribeToEvent } from '@/lib/socket'
+import { subscribeToEvent } from '@/lib/socket'
 import { FRIEND_REQUEST_EVENTS, FRIEND_STATUS_EVENTS } from '@/utils/constants'
 
 // ==================== Friend Request Services ====================
-
-/**
- * Send a friend request
- * @param {string} receiverId - Receiver user ID
- */
-export const sendFriendRequestSocket = (targetUserId) => {
-  emitEvent(FRIEND_REQUEST_EVENTS.SEND_FRIEND_REQUEST, { targetUserId })
-}
-
-/**
- * Accept a friend request
- * @param {string} id - Can be friend request ID or sender's user ID
- */
-export const acceptFriendRequestSocket = (id) => {
-  emitEvent(FRIEND_REQUEST_EVENTS.ACCEPT_FRIEND_REQUEST, { id })
-}
+// Gửi / chấp nhận lời mời đi qua REST (send-friend-request.js, accept-friend-request.js).
+// Socket chỉ dùng để nghe việc người kia vừa làm.
 
 /**
  * Subscribe to friend request events
  * @param {object} handlers - Event handlers
+ *   onFriendRequestReceived({ message, requestId, sender })            - người nhận lời mời
+ *   onFriendRequestAcceptedNotification({ message, friendshipId, friend }) - người đã gửi lời mời
  * @returns {function} Unsubscribe function
  */
 export const subscribeToFriendRequests = (handlers) => {
   const unsubscribers = []
 
-  if (handlers.onFriendRequestSent) {
-    unsubscribers.push(
-      subscribeToEvent(FRIEND_REQUEST_EVENTS.FRIEND_REQUEST_SENT, handlers.onFriendRequestSent)
-    )
-  }
-
   if (handlers.onFriendRequestReceived) {
     unsubscribers.push(
       subscribeToEvent(FRIEND_REQUEST_EVENTS.FRIEND_REQUEST_RECEIVED, handlers.onFriendRequestReceived)
-    )
-  }
-
-  if (handlers.onFriendRequestAccepted) {
-    unsubscribers.push(
-      subscribeToEvent(FRIEND_REQUEST_EVENTS.FRIEND_REQUEST_ACCEPTED, handlers.onFriendRequestAccepted)
     )
   }
 

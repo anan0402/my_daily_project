@@ -22,8 +22,9 @@ import './chat-window.css'
  * @param {string} userId - Người đang chat cùng
  * @param {boolean} [isOnline] - Trạng thái online realtime (từ cache friends, ghép ở tầng app).
  *   Không truyền thì dùng giá trị lúc fetch conversation info.
+ * @param {Function} [onAvatarClick] - (event) => void, bấm avatar trên header (tầng app mở popup thao tác)
  */
-function ChatWindow({ userId, isOnline }) {
+function ChatWindow({ userId, isOnline, onAvatarClick }) {
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
   const [inputValue, setInputValue] = useState('')
@@ -142,6 +143,7 @@ function ChatWindow({ userId, isOnline }) {
           size="medium"
           fallback={chatUser?.username?.[0]}
           isOnline={chatUser?.online}
+          onClick={onAvatarClick}
         />
       </Box>
 

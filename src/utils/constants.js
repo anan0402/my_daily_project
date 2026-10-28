@@ -7,15 +7,10 @@
  */
 
 // Friend Request Events
+// Gửi / chấp nhận lời mời đi qua REST, socket chỉ báo cho người kia
 export const FRIEND_REQUEST_EVENTS = {
-  // Incoming events (listened by server)
-  SEND_FRIEND_REQUEST: 'send_friend_request',
-  ACCEPT_FRIEND_REQUEST: 'accept_friend_request',
-
   // Outgoing events (emitted by server)
-  FRIEND_REQUEST_SENT: 'friend_request_sent',
   FRIEND_REQUEST_RECEIVED: 'friend_request_received',
-  FRIEND_REQUEST_ACCEPTED: 'friend_request_accepted',
   FRIEND_REQUEST_ACCEPTED_NOTIFICATION: 'friend_request_accepted_notification'
 }
 

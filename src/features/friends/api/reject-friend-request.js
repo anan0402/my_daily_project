@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api-client'
 
 import { getFriendsQueryOptions } from '@/features/friends/api/get-friends'
+import { getReceivedFriendRequestsQueryOptions } from '@/features/friends/api/get-received-friend-requests'
 
 /**
  * Reject friend request
@@ -21,6 +22,7 @@ export const useRejectFriendRequest = ({ mutationConfig } = {}) => {
   return useMutation({
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: getFriendsQueryOptions().queryKey })
+      queryClient.invalidateQueries({ queryKey: getReceivedFriendRequestsQueryOptions().queryKey })
       onSuccess?.(...args)
     },
     ...restConfig,

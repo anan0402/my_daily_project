@@ -1,0 +1,61 @@
+.friend-requests {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.friend-requests-title {
+  display: block;
+  padding: 4px 16px 8px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.friend-request-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
+}
+
+.friend-request-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.friend-request-user:hover .friend-request-name {
+  text-decoration: underline;
+}
+
+.friend-request-name {
+  font-weight: 500;
+  font-size: 14px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-request-actions {
+  display: flex;
+  gap: 8px;
+  padding-left: 44px;
+}
+
+/* MUI Button tự đặt font Roboto -> ép về font mono, cùng kiểu .account-profile-action */
+.friend-request-button {
+  flex: 1;
+  min-width: 0 !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.625rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 6px 12px !important;
+}

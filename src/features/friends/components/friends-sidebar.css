@@ -69,6 +69,14 @@
   text-overflow: ellipsis;
 }
 
+.friend-menu-button {
+  color: var(--color-text-secondary) !important;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  font-size: 14px !important;
+}
+
 .friend-status {
   color: var(--color-text-secondary);
   font-size: 12px;

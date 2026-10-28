@@ -88,6 +88,7 @@ Exceptions:
 ### Realtime (Socket.IO)
 
 - `lib/socket.js` owns the connection: `initSocket`, `disconnectSocket`, `subscribeToEvent`, `emitEvent`, and re-joins conversation rooms after every reconnect. Event names are in `utils/constants.js`.
+- User actions (send / accept friend request, etc.) go through a REST mutation, not a socket emit: a mutation gives success/error, `isPending` and the token-refresh interceptor. Sockets are for hearing what the *other* user did. Backend contract: `my_daily_project_api/docs/FRIENDS_API.md`.
 - Each feature wraps its own events in `features/<feature>/api/<name>-socket.js` (`message-socket.js`, `friend-socket.js`, `notification-socket.js`). `subscribeTo*` functions return an unsubscribe function.
 - Subscriptions that only touch one feature's cache live in that feature as a hook (`features/notifications/hooks/use-notification-subscriptions.js`, `features/friends/hooks/use-friend-status-subscriptions.js`), with the cache helper next to the query options (`prependNotificationToCache`, `setFriendsOnlineStatus`).
 - `app/use-global-socket-subscriptions.js` calls those hooks and handles only the events that touch several features' caches. Keep it that way so it doesn't grow with every feature.

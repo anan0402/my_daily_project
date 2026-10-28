@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useSelector } from 'react-redux'
 import { useQueryClient } from '@tanstack/react-query'
@@ -11,19 +10,18 @@ import DefaultLayout from '@/app/layouts/default-layout/default-layout'
 import CustomAvatar from '@/components/ui/custom-avatar'
 import CustomButton from '@/components/ui/custom-button'
 import CustomTextField from '@/components/ui/custom-text-field'
+import { showErrorToast } from '@/components/ui/custom-toast'
 import Text from '@/components/ui/text'
+import { useAcceptFriendRequest } from '@/features/friends/api/accept-friend-request'
 import { useCancelFriendRequest } from '@/features/friends/api/cancel-friend-request'
-import {
-  acceptFriendRequestSocket,
-  sendFriendRequestSocket,
-  subscribeToFriendRequests
-} from '@/features/friends/api/friend-socket'
 import { useRejectFriendRequest } from '@/features/friends/api/reject-friend-request'
+import { useSendFriendRequest } from '@/features/friends/api/send-friend-request'
 import { useUnfriend } from '@/features/friends/api/unfriend'
 import { getUserQueryOptions, useUser } from '@/features/users/api/get-user'
 import { updateUserInputSchema } from '@/features/users/api/update-user'
 import { selectCurrentUser } from '@/lib/store/user-slice'
 import { getAvatarSrc } from '@/utils/get-avatar-src'
+import { getErrorMessage } from '@/utils/get-error-message'
 import './profile.css'
 
 const FRIEND_REQUEST_STATUS = {
@@ -48,34 +46,24 @@ function ProfileRoute() {
 
   const { data: user, isLoading, error } = useUser({ userId: id })
 
-  // Đổi trạng thái bạn bè làm thay đổi relationshipStatus của user đang xem
+  // Mọi thao tác bạn bè đi qua REST. Đổi trạng thái làm thay đổi relationshipStatus
+  // của user đang xem, nên invalidate user này sau khi thành công.
+  // Việc người kia làm (gửi / chấp nhận) do app/use-global-socket-subscriptions.js xử lý.
   const friendMutationConfig = {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: getUserQueryOptions(id).queryKey })
+    },
+    onError: (error) => {
+      showErrorToast(getErrorMessage(error, 'Something went wrong. Please try again.'))
+      // Lỗi thường do trạng thái đã đổi ở phía người kia (409, 404) -> lấy lại trạng thái mới
+      queryClient.invalidateQueries({ queryKey: getUserQueryOptions(id).queryKey })
     }
   }
+  const sendRequest = useSendFriendRequest({ mutationConfig: friendMutationConfig })
+  const acceptRequest = useAcceptFriendRequest({ mutationConfig: friendMutationConfig })
   const rejectRequest = useRejectFriendRequest({ mutationConfig: friendMutationConfig })
   const cancelRequest = useCancelFriendRequest({ mutationConfig: friendMutationConfig })
   const unfriend = useUnfriend({ mutationConfig: friendMutationConfig })
-
-  // Gửi / chấp nhận lời mời đi qua socket, server báo kết quả bằng event.
-  // List friends đã được app/use-global-socket-subscriptions.js invalidate, nhưng user ở đó
-  // lấy theo data.targetUserId - với người bấm Accept thì không phải user đang xem,
-  // nên trang này tự refetch user của chính nó.
-  useEffect(() => {
-    if (!id) return
-
-    const refetchViewedUser = () => {
-      queryClient.refetchQueries({ queryKey: getUserQueryOptions(id).queryKey })
-    }
-
-    const unsubscribe = subscribeToFriendRequests({
-      onFriendRequestSent: refetchViewedUser,
-      onFriendRequestAccepted: refetchViewedUser
-    })
-
-    return unsubscribe
-  }, [queryClient, id])
 
   const isOwnProfile = currentUser?._id === id
   const isGoogleUser = user?.type === 'google'
@@ -86,10 +74,6 @@ function ProfileRoute() {
     values: { username: user?.username || '', password: '' },
     resetOptions: { keepDirtyValues: true }
   })
-
-  const handleAddFriend = (targetUserId) => {
-    sendFriendRequestSocket(targetUserId)
-  }
 
   // TODO: updateUser chưa gửi body lên server, nối API khi backend sẵn sàng
   const onSubmit = () => {}
@@ -102,9 +86,10 @@ function ProfileRoute() {
           <CustomButton
             variable="primary"
             className="account-profile-action"
-            onClick={() => handleAddFriend(id)}
+            onClick={() => sendRequest.mutate(id)}
+            disabled={sendRequest.isPending}
           >
-            Add Friend
+            {sendRequest.isPending ? 'Sending...' : 'Add Friend'}
           </CustomButton>
         )
 
@@ -125,9 +110,10 @@ function ProfileRoute() {
             <CustomButton
               variable="primary"
               className="account-profile-action"
-              onClick={() => acceptFriendRequestSocket(id)}
+              onClick={() => acceptRequest.mutate(id)} // userId người gửi: server nhận cả requestId lẫn userId
+              disabled={acceptRequest.isPending}
             >
-              Accept Request
+              {acceptRequest.isPending ? 'Accepting...' : 'Accept Request'}
             </CustomButton>
             <CustomButton
               variable="outline"
