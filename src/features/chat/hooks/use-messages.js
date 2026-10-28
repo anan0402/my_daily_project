@@ -1,4 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+
+import { appendMessageToCache, removeMessageFromCache } from '@/features/chat/api/get-messages'
 import {
   subscribeToMessages,
   joinConversation,
@@ -10,13 +13,16 @@ import {
 } from '@/features/chat/api/message-socket'
 
 /**
- * Custom hook for managing real-time messages in a chat room
+ * Custom hook for managing real-time messages in a chat room.
+ * Tin nhắn mới được ghi thẳng vào cache của useInfiniteMessages,
+ * hook chỉ giữ state typing (tạm thời, không có trên server).
+ * State reset khi đổi conversation nhờ ChatWindow được đặt key theo userId.
  * @param {string} conversationId - Chat room ID
  * @param {string} currentUserId - Current user ID for optimistic updates
- * @returns {object} Message state and actions
+ * @returns {object} Typing state and actions
  */
 export const useMessages = (conversationId, currentUserId) => {
-  const [messages, setMessages] = useState([])
+  const queryClient = useQueryClient()
   const [typingUsers, setTypingUsers] = useState([])
   const typingTimeoutRef = useRef(null)
 
@@ -39,7 +45,7 @@ export const useMessages = (conversationId, currentUserId) => {
       // Handle new message (skip own messages - already added optimistically)
       onNewMessage: (message) => {
         if (message.senderId === currentUserId) return
-        setMessages((prev) => [...prev, message])
+        appendMessageToCache(queryClient, conversationId, message)
       },
 
       // Handle user typing
@@ -62,14 +68,12 @@ export const useMessages = (conversationId, currentUserId) => {
 
       // Handle message deleted
       onMessageDeleted: ({ messageId }) => {
-        setMessages((prev) =>
-          prev.filter((msg) => msg._id !== messageId)
-        )
+        removeMessageFromCache(queryClient, conversationId, messageId)
       }
     })
 
     return unsubscribe
-  }, [conversationId, currentUserId])
+  }, [conversationId, currentUserId, queryClient])
 
   // Action handlers
   const handleSendMessage = useCallback(
@@ -84,7 +88,7 @@ export const useMessages = (conversationId, currentUserId) => {
         message: messageData.message,
         createdAt: new Date().toISOString()
       }
-      setMessages((prev) => [...prev, optimisticMessage])
+      appendMessageToCache(queryClient, conversationId, optimisticMessage)
 
       // Send via socket
       sendMessage({
@@ -92,7 +96,7 @@ export const useMessages = (conversationId, currentUserId) => {
         ...messageData
       })
     },
-    [conversationId, currentUserId]
+    [conversationId, currentUserId, queryClient]
   )
 
   const handleDeleteMessage = useCallback(
@@ -132,12 +136,6 @@ export const useMessages = (conversationId, currentUserId) => {
     }, 3000)
   }, [conversationId, handleStopTyping])
 
-  // Clear messages when room changes
-  useEffect(() => {
-    setMessages([])
-    setTypingUsers([])
-  }, [conversationId])
-
   // Cleanup typing timeout on unmount
   useEffect(() => {
     return () => {
@@ -148,7 +146,6 @@ export const useMessages = (conversationId, currentUserId) => {
   }, [])
 
   return {
-    messages,
     typingUsers,
     sendMessage: handleSendMessage,
     deleteMessage: handleDeleteMessage,

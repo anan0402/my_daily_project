@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useSelector } from 'react-redux'
 import { useQueryClient } from '@tanstack/react-query'
+import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 
@@ -16,10 +18,10 @@ import {
   sendFriendRequestSocket,
   subscribeToFriendRequests
 } from '@/features/friends/api/friend-socket'
-import { getFriendsQueryOptions } from '@/features/friends/api/get-friends'
 import { useRejectFriendRequest } from '@/features/friends/api/reject-friend-request'
 import { useUnfriend } from '@/features/friends/api/unfriend'
 import { getUserQueryOptions, useUser } from '@/features/users/api/get-user'
+import { updateUserInputSchema } from '@/features/users/api/update-user'
 import { selectCurrentUser } from '@/lib/store/user-slice'
 import { getAvatarSrc } from '@/utils/get-avatar-src'
 import './profile.css'
@@ -56,7 +58,8 @@ function ProfileRoute() {
   const cancelRequest = useCancelFriendRequest({ mutationConfig: friendMutationConfig })
   const unfriend = useUnfriend({ mutationConfig: friendMutationConfig })
 
-  // Gửi / chấp nhận lời mời đi qua socket, server báo kết quả bằng event
+  // Gửi lời mời đi qua socket, server báo kết quả bằng event.
+  // Chấp nhận lời mời đã được app/use-global-socket-subscriptions.js invalidate (user + friends).
   useEffect(() => {
     if (!id) return
 
@@ -64,51 +67,28 @@ function ProfileRoute() {
       // When send friend request success -> refetch user details
       onFriendRequestSent: () => {
         queryClient.refetchQueries({ queryKey: getUserQueryOptions(id).queryKey })
-      },
-      // When accept friend request success -> refetch user details & friends
-      onFriendRequestAccepted: () => {
-        queryClient.refetchQueries({ queryKey: getUserQueryOptions(id).queryKey })
-        queryClient.refetchQueries({ queryKey: getFriendsQueryOptions().queryKey })
       }
     })
 
     return unsubscribe
   }, [queryClient, id])
 
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: ''
-  })
-
   const isOwnProfile = currentUser?._id === id
   const isGoogleUser = user?.type === 'google'
 
-  useEffect(() => {
-    if (user) {
-      setFormData(prev => ({
-        ...prev,
-        username: user.username || '',
-        email: user.email || ''
-      }))
-    }
-  }, [user])
+  // values: form lấy dữ liệu từ query; keepDirtyValues để refetch không ghi đè chỗ đang gõ
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(updateUserInputSchema),
+    values: { username: user?.username || '', password: '' },
+    resetOptions: { keepDirtyValues: true }
+  })
 
   const handleAddFriend = (targetUserId) => {
     sendFriendRequestSocket(targetUserId)
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
+  // TODO: updateUser chưa gửi body lên server, nối API khi backend sẵn sàng
+  const onSubmit = () => {}
 
   const renderFriendRequestButtons = (user) => {
     if (isOwnProfile) return null
@@ -274,37 +254,52 @@ function ProfileRoute() {
 
               <Box
                 component="form"
-                onSubmit={handleSubmit}
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
                 className="account-profile-form"
               >
-                <CustomTextField
-                  fullWidth
-                  label="Username"
+                <Controller
                   name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  disabled={!isOwnProfile}
+                  control={control}
+                  render={({ field: { ref, ...field }, fieldState: { error } }) => (
+                    <CustomTextField
+                      {...field}
+                      inputRef={ref}
+                      fullWidth
+                      label="Username"
+                      disabled={!isOwnProfile}
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
 
+                {/* Email không sửa được -> đọc thẳng từ query, không đưa vào form */}
                 <CustomTextField
                   fullWidth
                   label="Email"
                   name="email"
                   type="email"
-                  value={formData.email}
+                  value={user?.email || ''}
                   disabled
                 />
 
                 {isOwnProfile && !isGoogleUser && (
-                  <CustomTextField
-                    fullWidth
-                    label="Password"
+                  <Controller
                     name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Enter new password"
-                    helperText="Leave blank to keep current password"
+                    control={control}
+                    render={({ field: { ref, ...field }, fieldState: { error } }) => (
+                      <CustomTextField
+                        {...field}
+                        inputRef={ref}
+                        fullWidth
+                        label="Password"
+                        type="password"
+                        placeholder="Enter new password"
+                        error={!!error}
+                        helperText={error?.message || 'Leave blank to keep current password'}
+                      />
+                    )}
                   />
                 )}
 

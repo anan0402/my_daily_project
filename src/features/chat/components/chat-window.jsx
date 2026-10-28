@@ -18,7 +18,12 @@ import { selectCurrentUser } from '@/lib/store/user-slice'
 import { getAvatarSrc } from '@/utils/get-avatar-src'
 import './chat-window.css'
 
-function ChatWindow({ userId }) {
+/**
+ * @param {string} userId - Người đang chat cùng
+ * @param {boolean} [isOnline] - Trạng thái online realtime (từ cache friends, ghép ở tầng app).
+ *   Không truyền thì dùng giá trị lúc fetch conversation info.
+ */
+function ChatWindow({ userId, isOnline }) {
   const navigate = useNavigate()
   const currentUser = useSelector(selectCurrentUser)
   const [inputValue, setInputValue] = useState('')
@@ -35,7 +40,7 @@ function ChatWindow({ userId }) {
   const chatUser = conversationInfo ? {
     username: conversationInfo.name,
     avatar: conversationInfo.avatar,
-    online: conversationInfo.isOnline
+    online: isOnline ?? conversationInfo.isOnline
   } : null
 
   // Fetch paginated message history
@@ -49,7 +54,6 @@ function ChatWindow({ userId }) {
 
   // Real-time message updates via socket
   const {
-    messages: realtimeMessages,
     sendMessage: sendSocketMessage,
     startTyping,
     stopTyping,
@@ -58,13 +62,20 @@ function ChatWindow({ userId }) {
    
   // Flatten all paginated messages
   // Reverse pages so that page 2 (older messages) comes before page 1 (newer messages)
-  const paginatedMessages = useMemo(() => {
+  // Bỏ trùng: tin mới tới làm offset phía server dịch đi, page cũ tải sau có thể lặp lại vài tin
+  const messages = useMemo(() => {
     if (!messagePages?.pages) return []
 
+    const seenIds = new Set()
     return messagePages.pages
       .slice()
       .reverse()
       .flatMap(page => page?.messages || [])
+      .filter((message) => {
+        if (seenIds.has(message._id)) return false
+        seenIds.add(message._id)
+        return true
+      })
   }, [messagePages])
 
   
@@ -137,8 +148,7 @@ function ChatWindow({ userId }) {
       {/* Messages Area */}
       <Box className="chat-messages-area">
         <MessageArea
-          paginatedMessages={paginatedMessages}
-          realtimeMessages={realtimeMessages}
+          messages={messages}
           onLoadMore={fetchNextPage}
           hasMore={hasNextPage}
           isLoadingMore={isFetchingNextPage}

@@ -5,7 +5,6 @@ import CustomAvatar from '@/components/ui/custom-avatar'
 import Text from '@/components/ui/text'
 import { paths } from '@/config/paths'
 import { useFriends } from '@/features/friends/api/get-friends'
-import { setActiveChatUser } from '@/lib/store/chat-slice'
 import { selectSidebarIsOpen, closeSidebar } from '@/lib/store/sidebar-slice'
 import './friends-sidebar.css'
 
@@ -18,14 +17,6 @@ function FriendsSidebar() {
 
   const handleFriendClick = (friend) => {
     const friendData = friend.friendId || friend
-
-    // Store friend info in Redux
-    dispatch(setActiveChatUser({
-      _id: friendData._id,
-      username: friendData.username,
-      avatar: friendData.avatar,
-      online: friendData.isOnline
-    }))
 
     // Navigate to chat
     navigate(paths.app.chat.getHref(friendData._id))

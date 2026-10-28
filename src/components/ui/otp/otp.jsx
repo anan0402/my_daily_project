@@ -18,20 +18,18 @@ function OTP({
   const [otp, setOtp] = useState(() => Array(length).fill(''))
   const [error, setError] = useState(false)
   const [resendCountdown, setResendCountdown] = useState(initialResendCountdown)
-  const [canResend, setCanResend] = useState(false)
   const inputRefs = useRef([])
 
   const lastIndex = length - 1
+  const canResend = resendCountdown === 0
 
   useEffect(() => {
-    if (resendCountdown > 0) {
-      const timer = setTimeout(() => {
-        setResendCountdown(resendCountdown - 1)
-      }, 1000)
-      return () => clearTimeout(timer)
-    }
+    if (resendCountdown === 0) return
 
-    setCanResend(true)
+    const timer = setTimeout(() => {
+      setResendCountdown(resendCountdown - 1)
+    }, 1000)
+    return () => clearTimeout(timer)
   }, [resendCountdown])
 
   const handleOtpChange = (index, value) => {
@@ -86,7 +84,6 @@ function OTP({
     try {
       await onResend()
       setResendCountdown(initialResendCountdown)
-      setCanResend(false)
       setOtp(Array(length).fill(''))
       inputRefs.current[0]?.focus()
     } catch {

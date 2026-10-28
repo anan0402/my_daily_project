@@ -13,8 +13,7 @@ import './message-area.css'
 
 /**
  * MessageArea component with virtual list and infinite scroll
- * @param {Array} paginatedMessages - Messages from paginated API
- * @param {Array} realtimeMessages - Messages from real-time socket
+ * @param {Array} messages - Messages from the infinite query cache (history + real-time)
  * @param {Function} onLoadMore - Callback to load more messages
  * @param {boolean} hasMore - Whether there are more messages to load
  * @param {boolean} isLoadingMore - Loading state for pagination
@@ -22,8 +21,7 @@ import './message-area.css'
  * @param {Array} typingUsers - Users currently typing
  */
 function MessageArea({
-  paginatedMessages = [],
-  realtimeMessages = [],
+  messages = [],
   onLoadMore,
   hasMore = false,
   isLoadingMore = false,
@@ -36,16 +34,12 @@ function MessageArea({
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [firstItemIndex, setFirstItemIndex] = useState(0)
 
-  // Combine paginated and real-time messages
+  // Sort by createdAt (oldest first)
   const allMessages = useMemo(() => {
-    // Remove duplicates between paginated and real-time messages
-    const realtimeIds = new Set(realtimeMessages.map(m => m._id))
-    const uniquePaginatedMessages = paginatedMessages.filter(m => !realtimeIds.has(m._id))
-    // Sort by createdAt (oldest first)
-    return [...uniquePaginatedMessages, ...realtimeMessages].sort(
+    return [...messages].sort(
       (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
     )
-  }, [paginatedMessages, realtimeMessages])
+  }, [messages])
   const prevMessageCountRef = useRef(allMessages.length)
 
   // Adjust firstItemIndex when messages are prepended (loading older messages)

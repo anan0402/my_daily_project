@@ -99,12 +99,12 @@ Exceptions:
 |---|---|---|
 | Server data | TanStack Query | `features/*/api` |
 | Current user (persisted) | Redux `user` slice | `lib/store/user-slice.js` (`selectCurrentUser`, `loginUserAPI`, `logoutUserAPI`...) |
-| Global UI / socket state | Redux `sidebar`, `socket`, `chat` slices | `lib/store/*-slice.js` |
+| Global UI / socket state | Redux `sidebar`, `socket` slices | `lib/store/*-slice.js` |
 | Tokens | localStorage / sessionStorage | `lib/token-storage.js` (see its header comment for why not cookies) |
 | Forms | React Hook Form + yup | in the feature component |
 | Local | `useState` | in the component |
 
-Don't copy server data into Redux or local state. Add a Redux slice only for genuinely global client state, and register it in `lib/store/index.js`.
+Don't copy server data into Redux or local state. Socket updates write into the same query cache the REST data lives in (`appendMessageToCache`, `setFriendsOnlineStatus`, `prependNotificationToCache`), so each piece of data has one source. Forms seeded from a query use React Hook Form's `values` (with `resetOptions: { keepDirtyValues: true }`), not a `useEffect` that copies into `useState`. Add a Redux slice only for genuinely global client state, and register it in `lib/store/index.js`.
 
 ## Checklist: adding an endpoint
 

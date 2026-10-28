@@ -40,7 +40,51 @@ export const getInfiniteMessagesQueryOptions = (conversationId, { limit = 50, se
   })
 }
 
-export const useInfiniteMessages = ({ conversationId, limit, search, queryConfig } = {}) => {
+/**
+ * Thêm tin nhắn (từ socket hoặc optimistic) vào page mới nhất của list đã cache.
+ * Dùng chung cache với lịch sử tin nhắn để chỉ có một nguồn dữ liệu.
+ */
+export const appendMessageToCache = (queryClient, conversationId, message) => {
+  const { queryKey } = getInfiniteMessagesQueryOptions(conversationId)
+
+  if (!queryClient.getQueryData(queryKey)?.pages?.length) {
+    // List chưa về (đang fetch lần đầu) -> fetch lại để không mất tin vừa tới
+    queryClient.invalidateQueries({ queryKey })
+    return
+  }
+
+  queryClient.setQueryData(queryKey, (prev) => {
+    const isDuplicated = prev.pages.some((page) =>
+      page?.messages?.some((item) => item._id === message._id)
+    )
+    if (isDuplicated) return prev
+
+    const [firstPage, ...restPages] = prev.pages
+    return {
+      ...prev,
+      pages: [
+        { ...firstPage, messages: [...(firstPage?.messages || []), message] },
+        ...restPages
+      ]
+    }
+  })
+}
+
+export const removeMessageFromCache = (queryClient, conversationId, messageId) => {
+  queryClient.setQueryData(getInfiniteMessagesQueryOptions(conversationId).queryKey, (prev) => {
+    if (!prev?.pages?.length) return prev
+
+    return {
+      ...prev,
+      pages: prev.pages.map((page) => ({
+        ...page,
+        messages: (page?.messages || []).filter((item) => item._id !== messageId)
+      }))
+    }
+  })
+}
+
+export const useInfiniteMessages =({ conversationId, limit, search, queryConfig } = {}) => {
   return useInfiniteQuery({
     ...getInfiniteMessagesQueryOptions(conversationId, { limit, search }),
     ...queryConfig
