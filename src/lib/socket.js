@@ -71,7 +71,10 @@ export const initSocket = () => {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
-    reconnectionAttempts: 5
+    reconnectionDelayMax: 10000,
+    // Không giới hạn: giới hạn 5 lần thì server cold start / máy sleep lâu là socket
+    // bỏ cuộc vĩnh viễn, mất mọi event realtime cho tới khi tải lại trang
+    reconnectionAttempts: Infinity
   })
 
   /**

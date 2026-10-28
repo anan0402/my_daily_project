@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 
 import { subscribeToFriendStatus } from '@/features/friends/api/friend-socket'
-import { setFriendsOnlineStatus } from '@/features/friends/api/get-friends'
+import { getFriendsQueryOptions, setFriendsOnlineStatus } from '@/features/friends/api/get-friends'
 import { selectSocketStatus } from '@/lib/store/socket-slice'
 
 // Event có thể là 1 object hoặc mảng object { userId }
@@ -22,6 +22,10 @@ export const useFriendStatusSubscriptions = () => {
 
   useEffect(() => {
     if (!isSocketConnected) return
+
+    // Mỗi lần (re)connect: event online/offline phát ra lúc socket đang rớt đã bị mất,
+    // nên lấy lại trạng thái thật từ server
+    queryClient.invalidateQueries({ queryKey: getFriendsQueryOptions().queryKey })
 
     const handleStatusChange = (eventName, isOnline) => (data) => {
       const userIds = getUserIds(data)
