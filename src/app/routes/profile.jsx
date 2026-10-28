@@ -58,16 +58,20 @@ function ProfileRoute() {
   const cancelRequest = useCancelFriendRequest({ mutationConfig: friendMutationConfig })
   const unfriend = useUnfriend({ mutationConfig: friendMutationConfig })
 
-  // Gửi lời mời đi qua socket, server báo kết quả bằng event.
-  // Chấp nhận lời mời đã được app/use-global-socket-subscriptions.js invalidate (user + friends).
+  // Gửi / chấp nhận lời mời đi qua socket, server báo kết quả bằng event.
+  // List friends đã được app/use-global-socket-subscriptions.js invalidate, nhưng user ở đó
+  // lấy theo data.targetUserId - với người bấm Accept thì không phải user đang xem,
+  // nên trang này tự refetch user của chính nó.
   useEffect(() => {
     if (!id) return
 
+    const refetchViewedUser = () => {
+      queryClient.refetchQueries({ queryKey: getUserQueryOptions(id).queryKey })
+    }
+
     const unsubscribe = subscribeToFriendRequests({
-      // When send friend request success -> refetch user details
-      onFriendRequestSent: () => {
-        queryClient.refetchQueries({ queryKey: getUserQueryOptions(id).queryKey })
-      }
+      onFriendRequestSent: refetchViewedUser,
+      onFriendRequestAccepted: refetchViewedUser
     })
 
     return unsubscribe
