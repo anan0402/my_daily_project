@@ -1,62 +1,62 @@
-.invite-plan-form {
+.invite-plan-paper.MuiPaper-root {
+  max-width: 520px;
+}
+
+.invite-plan-search {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 112px;
-  column-gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 16px;
 }
 
-.invite-plan-select {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.invite-plan-submit {
-  grid-column: 1 / -1;
-}
-
-.invite-plan-copy {
-  display: block;
-  margin: 16px auto 0;
-  border: none;
-  background: transparent;
+.invite-plan-role {
+  padding: 6px 4px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0;
+  background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-mono);
   font-size: 12px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
   cursor: pointer;
 }
 
-.invite-plan-copy:hover {
-  opacity: 0.5;
+.invite-plan-results {
+  min-height: 72px;
+  max-height: 240px;
+  margin-top: 12px;
+  overflow-y: auto;
 }
 
-.invite-plan-members-label {
-  margin-top: 28px;
-  padding-top: 20px;
-  border-top: 1px solid var(--color-border);
+.invite-plan-group {
+  margin: 12px 0 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
 }
 
-.invite-plan-members {
+.invite-plan-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.invite-plan-member {
+.invite-plan-person {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 8px 0;
 }
 
-.invite-plan-member-avatar {
+.invite-plan-avatar {
   display: flex;
   flex: none;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
+  overflow: hidden;
   border-radius: 50%;
   background: var(--color-surface-hover);
   color: var(--color-subtle);
@@ -65,35 +65,115 @@
   font-weight: 600;
 }
 
-.invite-plan-member-info {
+.invite-plan-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.invite-plan-person-info {
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
 }
 
-.invite-plan-member-name {
+.invite-plan-person-name {
+  overflow: hidden;
   font-family: var(--font-sans);
   font-size: 14px;
   color: var(--color-fg);
-}
-
-.invite-plan-member-email {
-  overflow: hidden;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--color-text-tertiary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.invite-plan-member-role {
+.invite-plan-person-sub {
   font-family: var(--font-mono);
   font-size: 11px;
+  color: var(--color-text-tertiary);
+}
+
+.invite-plan-add {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.invite-plan-add:hover {
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.invite-plan-add:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.invite-plan-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.invite-plan-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.invite-plan-section-header .plan-dialog-label {
+  margin: 0;
+}
+
+.invite-plan-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--color-subtle);
 }
 
-.invite-plan-member-remove {
+.invite-plan-link-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+}
+
+.invite-plan-text-button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.invite-plan-text-button:hover {
+  opacity: 0.5;
+}
+
+.invite-plan-text-button.is-danger {
+  color: var(--color-error);
+}
+
+.invite-plan-text-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.invite-plan-remove {
   width: 28px;
   height: 28px;
   border: none;
@@ -103,12 +183,12 @@
   cursor: pointer;
 }
 
-.invite-plan-member-remove:hover {
+.invite-plan-remove:hover {
   color: var(--color-error);
 }
 
-@media (max-width: 600px) {
-  .invite-plan-form {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.invite-plan-paper button:focus-visible,
+.invite-plan-paper select:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 2px;
 }

@@ -25,6 +25,8 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  /* Màu pastel gần nền trắng: viền mảnh để vẫn thấy */
+  border: 1px solid var(--color-border-strong);
   box-shadow: 0 0 0 2px var(--color-bg);
   transition: box-shadow 0.15s ease;
 }

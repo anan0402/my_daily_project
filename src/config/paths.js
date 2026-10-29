@@ -30,6 +30,11 @@ export const paths = {
       path: '/plans/:planId',
       getHref: (planId) => `/plans/${planId}`
     },
+    // Link mời do server sinh: `${WEBSITE_DOMAIN}/plans/join/<token>`
+    planJoin: {
+      path: '/plans/join/:token',
+      getHref: (token) => `/plans/join/${token}`
+    },
     profile: {
       path: '/profile/:id',
       getHref: (id) => `/profile/${id}`

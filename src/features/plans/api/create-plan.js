@@ -1,28 +1,33 @@
 import * as yup from 'yup'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { fakePlansDb } from '@/testing/fake-plans-db'
+import { api } from '@/lib/api-client'
+import { setPlanCache } from '@/features/plans/api/get-plan'
 import { getPlansQueryOptions } from '@/features/plans/api/get-plans'
-import { PLAN_COLORS, PLAN_TEMPLATES, PLAN_VISIBILITIES } from '@/features/plans/utils/plan-helpers'
+import { PLAN_COVER_COLORS, PLAN_VISIBILITIES, toIsoDate } from '@/features/plans/utils/plan-helpers'
 
 export const createPlanInputSchema = yup.object({
-  title: yup.string().trim().required('Plan name is required').max(80, 'Max 80 characters'),
-  template: yup.string().oneOf(PLAN_TEMPLATES.map((item) => item.value)).required(),
-  color: yup.string().oneOf(PLAN_COLORS.map((item) => item.value)).required(),
+  title: yup.string().trim().required('Plan name is required').max(120, 'Max 120 characters'),
+  // '' = Blank
+  templateKey: yup.string().default(''),
+  coverColor: yup.string().oneOf(PLAN_COVER_COLORS.map((item) => item.value)).required(),
   visibility: yup.string().oneOf(PLAN_VISIBILITIES.map((item) => item.value)).required(),
-  dueDate: yup.string().nullable().transform((value) => value || null)
+  dueDate: yup.string().default('')
 })
 
 /**
- * @param {object} input - createPlanInputSchema + ownerName
+ * @param {object} input - giá trị form createPlanInputSchema (dueDate dạng yyyy-mm-dd)
+ * @returns {Promise} PlanDetail
  */
-export const createPlan = ({ template, ...input }) => {
-  const selectedTemplate = PLAN_TEMPLATES.find((item) => item.value === template)
-  return fakePlansDb.createPlan({
-    ...input,
-    description: selectedTemplate?.description || '',
-    tasks: selectedTemplate?.tasks || []
+export const createPlan = async ({ title, templateKey, coverColor, visibility, dueDate }) => {
+  const response = await api.post('/v1/plans', {
+    title: title.trim(),
+    coverColor,
+    visibility,
+    dueDate: toIsoDate(dueDate),
+    templateKey: templateKey || undefined
   })
+  return response.data
 }
 
 export const useCreatePlan = ({ mutationConfig } = {}) => {
@@ -31,9 +36,12 @@ export const useCreatePlan = ({ mutationConfig } = {}) => {
   const { onSuccess, ...restConfig } = mutationConfig || {}
 
   return useMutation({
-    onSuccess: (...args) => {
+    // POST không idempotent: retry có thể tạo 2 plan
+    retry: false,
+    onSuccess: (plan, ...args) => {
+      setPlanCache(queryClient, plan)
       queryClient.invalidateQueries({ queryKey: getPlansQueryOptions().queryKey })
-      onSuccess?.(...args)
+      onSuccess?.(plan, ...args)
     },
     ...restConfig,
     mutationFn: createPlan

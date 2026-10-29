@@ -6,6 +6,8 @@ import CreatePlanDialog from '@/features/plans/components/create-plan-dialog'
 import PlanCard from '@/features/plans/components/plan-card'
 import { getPlanView } from '@/features/plans/utils/plan-helpers'
 import { paths } from '@/config/paths'
+import { useDebounce } from '@/hooks/use-debounce'
+import { getErrorMessage } from '@/utils/get-error-message'
 import './plan-list.css'
 
 const EMPTY_STATES = {
@@ -14,16 +16,16 @@ const EMPTY_STATES = {
     description: 'Create your first plan. It starts private, invite people when you are ready.'
   },
   shared: {
-    title: 'Nothing shared with you yet.',
-    description: 'When someone invites you to a plan, it shows up here.'
+    title: 'No one has invited you yet.',
+    description: "Plans you're invited to will show up here."
   },
   discover: {
-    title: 'Nothing to discover yet.',
+    title: 'Nothing here yet.',
     description: 'Public plans will appear here when they are published.'
   },
   saved: {
     title: 'No saved plans.',
-    description: 'Save a public plan from Discover to keep it here.'
+    description: 'Save a public plan to find it here later.'
   }
 }
 
@@ -33,16 +35,21 @@ const EMPTY_STATES = {
 function PlanList({ view }) {
   const navigate = useNavigate()
   const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const { data: plans = [], isLoading, isError, refetch } = usePlans({ view })
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search.trim(), 300)
+
+  // Server chỉ tìm theo title ở discover
+  const q = view === 'discover' ? debouncedSearch : ''
+  const { data, isLoading, isError, error, refetch } = usePlans({ scope: view, q })
+  const plans = data?.plans || []
+  const stats = data?.stats
 
   const viewConfig = getPlanView(view)
-  const emptyState = EMPTY_STATES[view] || EMPTY_STATES.mine
-  const openTaskCount = plans.reduce(
-    (sum, plan) => sum + plan.tasks.filter((task) => !task.completed).length,
-    0
-  )
-  const description = view === 'mine'
-    ? `${plans.length} ${plans.length === 1 ? 'plan' : 'plans'} · ${openTaskCount} open tasks`
+  const emptyState = q
+    ? { title: `No public plans match "${q}".`, description: 'Try another name.' }
+    : EMPTY_STATES[view] || EMPTY_STATES.mine
+  const description = view === 'mine' && stats
+    ? `${stats.total} ${stats.total === 1 ? 'plan' : 'plans'} · ${stats.openTasks} open tasks`
     : viewConfig.description
 
   return (
@@ -51,7 +58,7 @@ function PlanList({ view }) {
         <div>
           <p className="plan-list-eyebrow">{viewConfig.eyebrow}</p>
           <h1 className="plan-list-title">{viewConfig.title}</h1>
-          <p className="plan-list-description">{isLoading ? ' ' : description}</p>
+          <p className="plan-list-description">{description || ' '}</p>
         </div>
         {view === 'mine' && (
           <button type="button" className="plan-list-new-button" onClick={() => setIsCreateOpen(true)}>
@@ -60,6 +67,17 @@ function PlanList({ view }) {
           </button>
         )}
       </header>
+
+      {view === 'discover' && (
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search public plans…"
+          aria-label="Search public plans"
+          className="plan-list-search"
+        />
+      )}
 
       {isLoading && (
         <div className="plan-list-grid" aria-busy="true" aria-label="Loading plans">
@@ -70,6 +88,7 @@ function PlanList({ view }) {
       {isError && (
         <div className="plan-list-empty">
           <p className="plan-list-empty-title">Could not load plans.</p>
+          <p className="plan-list-empty-description">{getErrorMessage(error)}</p>
           <button type="button" className="plan-list-link-button" onClick={() => refetch()}>
             Try again
           </button>
@@ -95,7 +114,7 @@ function PlanList({ view }) {
           <p className="plan-list-empty-description">{emptyState.description}</p>
           {view === 'mine' && (
             <button type="button" className="plan-list-link-button" onClick={() => setIsCreateOpen(true)}>
-              + Create a plan
+              + New plan
             </button>
           )}
           {view === 'saved' && (
@@ -111,7 +130,8 @@ function PlanList({ view }) {
         onClose={() => setIsCreateOpen(false)}
         onCreated={(plan) => {
           setIsCreateOpen(false)
-          navigate(paths.app.plan.getHref(plan._id))
+          // Plan mới: focus ô "Add a task…"
+          navigate(paths.app.plan.getHref(plan._id), { state: { focusAddTask: true } })
         }}
       />
     </div>

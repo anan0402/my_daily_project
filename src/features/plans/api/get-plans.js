@@ -1,29 +1,32 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { fakePlansDb } from '@/testing/fake-plans-db'
+import { api } from '@/lib/api-client'
 
 /**
- * Chưa có /v1/plans trên server: fetcher đọc fake DB (localStorage).
- * Khi có API thật: `api.get('/v1/plans', { params: { view } })`.
  * @param {object} params
- * @param {'mine'|'shared'|'discover'|'saved'} params.view
+ * @param {'mine'|'shared'|'discover'|'saved'} params.scope
+ * @param {string} [params.q] - Tìm theo title, chỉ áp dụng cho discover
+ * @returns {Promise} { plans, stats: { total, openTasks } }. Plan trong list không có `tasks`, dùng `taskStats`.
  */
-export const getPlans = ({ view }) => fakePlansDb.listPlans({ view })
+export const getPlans = async ({ scope, q }) => {
+  const response = await api.get('/v1/plans', { params: { scope, q: q || undefined } })
+  return response.data
+}
 
 /**
- * Không truyền view thì queryKey là ['plans'], prefix của mọi query plans (list và detail):
- * các mutation invalidate bằng key này.
+ * Không truyền scope thì queryKey là ['plans']: prefix của mọi query plans
+ * (list, counts, detail), các mutation invalidate bằng key này.
  */
-export const getPlansQueryOptions = ({ view } = {}) => {
+export const getPlansQueryOptions = ({ scope, q = '' } = {}) => {
   return queryOptions({
-    queryKey: view ? ['plans', 'list', view] : ['plans'],
-    queryFn: () => getPlans({ view })
+    queryKey: scope ? ['plans', 'list', scope, q] : ['plans'],
+    queryFn: () => getPlans({ scope, q })
   })
 }
 
-export const usePlans = ({ view, queryConfig } = {}) => {
+export const usePlans = ({ scope, q, queryConfig } = {}) => {
   return useQuery({
-    ...getPlansQueryOptions({ view }),
+    ...getPlansQueryOptions({ scope, q }),
     ...queryConfig
   })
 }

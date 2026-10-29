@@ -1,5 +1,3 @@
-import { FAKE_CURRENT_USER_ID } from '@/testing/fake-plans-db'
-
 export const PLAN_VIEWS = [
   { value: 'mine', label: 'My plans', mobileLabel: 'Mine', eyebrow: 'Your workspace', title: 'Plans' },
   { value: 'shared', label: 'Shared with me', mobileLabel: 'Shared', eyebrow: 'Collaboration', title: 'Shared with me', description: 'Plans other people invited you to.' },
@@ -12,78 +10,59 @@ export const getPlanView = (value) => PLAN_VIEWS.find((item) => item.value === v
 export const PLAN_VISIBILITIES = [
   { value: 'private', label: 'Private', description: 'Only you can open this plan.' },
   { value: 'shared', label: 'Shared', description: 'Only invited members can open this plan.' },
-  { value: 'public', label: 'Public', description: 'Anyone with the link can view it. Only members can edit.' }
+  { value: 'public', label: 'Public', description: 'Anyone with the link can view and copy this plan. Only members can edit.' }
 ]
 
 export const getVisibilityLabel = (value) =>
   PLAN_VISIBILITIES.find((item) => item.value === value)?.label || value
 
-export const PLAN_COLORS = [
-  { value: 'ink', label: 'Ink', hex: '#111111' },
-  { value: 'forest', label: 'Forest', hex: '#2f6b4f' },
-  { value: 'ocean', label: 'Ocean', hex: '#2563a8' },
-  { value: 'berry', label: 'Berry', hex: '#8a3ffc' },
-  { value: 'rose', label: 'Rose', hex: '#d9467a' },
-  { value: 'sun', label: 'Sun', hex: '#e8a317' }
+// Server chỉ lưu key (PLANS_API.md 8.8), FE map sang màu
+export const PLAN_COVER_COLORS = [
+  { value: 'ink', label: 'Ink', color: 'var(--color-fg)' },
+  { value: 'sand', label: 'Sand', color: '#E9E1D3' },
+  { value: 'sage', label: 'Sage', color: '#CFD8C8' },
+  { value: 'sky', label: 'Sky', color: '#CBD9E6' },
+  { value: 'rose', label: 'Rose', color: '#E8CFCF' },
+  { value: 'amber', label: 'Amber', color: '#EED9B0' }
 ]
 
-export const getPlanColor = (value) => (PLAN_COLORS.find((item) => item.value === value) || PLAN_COLORS[0]).hex
-
-export const PLAN_TEMPLATES = [
-  { value: 'blank', label: 'Blank', tasks: [] },
-  {
-    value: 'trip',
-    label: 'Trip',
-    description: 'Tickets, stay, route and packing.',
-    tasks: ['Book transport', 'Reserve a place to stay', 'Plan the daily route', 'Pack the bags']
-  },
-  {
-    value: 'launch',
-    label: 'Product launch',
-    description: 'From copy to launch day.',
-    tasks: ['Write launch copy', 'Design the landing page', 'Set up analytics', 'Announce the launch']
-  },
-  {
-    value: 'study',
-    label: 'Study plan',
-    description: 'A steady routine towards an exam.',
-    tasks: ['Take a diagnostic test', 'Set a weekly schedule', 'Practice every day', 'Take a mock exam']
-  },
-  {
-    value: 'routine',
-    label: 'Daily routine',
-    description: 'Small habits, every day.',
-    tasks: ['Drink a glass of water', 'Stretch for 10 minutes', 'Read 5 pages']
-  }
-]
+export const getCoverColor = (value) =>
+  (PLAN_COVER_COLORS.find((item) => item.value === value) || PLAN_COVER_COLORS[0]).color
 
 export const ROLE_LABELS = {
   owner: 'Owner',
   editor: 'Can edit',
-  viewer: 'Can view'
+  viewer: 'Can view',
+  public_viewer: 'Visitor'
 }
+
+export const TASK_STATUSES = [
+  { value: 'todo', label: 'To do' },
+  { value: 'in_progress', label: 'In progress' },
+  { value: 'done', label: 'Done' }
+]
+
+export const TASK_PRIORITIES = [
+  { value: 'low', label: 'Low' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'high', label: 'High' }
+]
 
 export const canEditPlan = (plan) => plan?.myRole === 'owner' || plan?.myRole === 'editor'
 
 export const isPlanOwner = (plan) => plan?.myRole === 'owner'
 
-export const getPlanProgress = (plan) => {
-  const total = plan?.tasks?.length || 0
-  const completed = plan?.tasks?.filter((task) => task.completed).length || 0
-  return {
-    total,
-    completed,
-    percent: total ? Math.round((completed / total) * 100) : 0
-  }
+// owner / editor / viewer; public_viewer là người ngoài xem plan public
+export const isPlanParticipant = (plan) => Boolean(plan?.myRole) && plan.myRole !== 'public_viewer'
+
+/** Owner + members (members từ server không gồm owner) */
+export const getPlanPeople = (plan) => {
+  if (!plan) return []
+  const owner = plan.owner ? [{ ...plan.owner, role: 'owner' }] : []
+  return [...owner, ...(plan.members || [])]
 }
 
-export const formatDueDate = (dueDate) => {
-  if (!dueDate) return 'No due date'
-  return new Date(`${dueDate}T00:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
-export const formatCount = (value) =>
-  value >= 1000 ? `${(value / 1000).toFixed(1).replace(/\.0$/, '')}k` : String(value)
+export const getPersonName = (person) => person?.displayName || person?.username || 'Unknown'
 
 export const getInitials = (name = '') =>
   name
@@ -93,9 +72,21 @@ export const getInitials = (name = '') =>
     .map((part) => part[0].toUpperCase())
     .join('') || '?'
 
-export const getCurrentUserName = (currentUser) =>
-  currentUser?.displayName || currentUser?.name || currentUser?.username || 'You'
+// dueDate là ISO ở 00:00 UTC; giữ UTC khi đổi qua lại với <input type="date"> để không lệch ngày
+export const toIsoDate = (inputValue) => (inputValue ? `${inputValue}T00:00:00.000Z` : null)
 
-/** Thành viên "me" trong fake DB hiển thị bằng tên của tài khoản đang đăng nhập */
-export const getMemberName = (member, currentUser) =>
-  member._id === FAKE_CURRENT_USER_ID ? getCurrentUserName(currentUser) : member.name
+export const toDateInputValue = (isoDate) => (isoDate ? isoDate.slice(0, 10) : '')
+
+export const formatDueDate = (isoDate, emptyLabel = 'No deadline') => {
+  if (!isoDate) return emptyLabel
+  return new Date(isoDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+}
+
+export const isOverdue = (isoDate) => {
+  if (!isoDate) return false
+  const today = new Date().toISOString().slice(0, 10)
+  return isoDate.slice(0, 10) < today
+}
+
+export const formatCount = (value = 0) =>
+  value >= 1000 ? `${(value / 1000).toFixed(1).replace(/\.0$/, '')}k` : String(value)

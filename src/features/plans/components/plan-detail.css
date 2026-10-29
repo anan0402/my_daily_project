@@ -247,8 +247,28 @@
   color: var(--color-subtle);
 }
 
-.plan-detail-tasks {
+.plan-detail-meta-button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.plan-detail-meta-button:hover {
+  opacity: 0.5;
+}
+
+.plan-detail-task-group {
   margin-bottom: 40px;
+}
+
+.plan-detail-task-group .plan-detail-section-title {
+  margin-bottom: 8px;
 }
 
 .plan-detail-section-header {
@@ -359,6 +379,24 @@
 
 .plan-detail-text-button:hover {
   opacity: 0.5;
+}
+
+.plan-detail-text-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.plan-detail-aside-section .plan-detail-text-button {
+  display: block;
+}
+
+.plan-detail-text-button.is-danger {
+  color: var(--color-error);
+}
+
+.plan-detail-visibility-option:disabled:not(.is-active) {
+  color: var(--color-muted);
+  cursor: not-allowed;
 }
 
 .plan-detail-visibility {

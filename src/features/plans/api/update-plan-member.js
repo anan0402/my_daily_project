@@ -1,13 +1,19 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { fakePlansDb } from '@/testing/fake-plans-db'
+import { api } from '@/lib/api-client'
 import { setPlanCache } from '@/features/plans/api/get-plan'
 import { getPlansQueryOptions } from '@/features/plans/api/get-plans'
 
-/** Lưu / bỏ lưu plan vào mục Saved */
-export const toggleSavePlan = (planId) => fakePlansDb.toggleSavePlan(planId)
+/**
+ * Chỉ owner: đổi quyền Can edit / Can view.
+ * @returns {Promise} PlanDetail
+ */
+export const updatePlanMember = async ({ planId, userId, role }) => {
+  const response = await api.put(`/v1/plans/${planId}/members/${userId}`, { role })
+  return response.data
+}
 
-export const useToggleSavePlan = ({ mutationConfig } = {}) => {
+export const useUpdatePlanMember = ({ mutationConfig } = {}) => {
   const queryClient = useQueryClient()
 
   const { onSuccess, ...restConfig } = mutationConfig || {}
@@ -19,6 +25,6 @@ export const useToggleSavePlan = ({ mutationConfig } = {}) => {
       onSuccess?.(plan, ...args)
     },
     ...restConfig,
-    mutationFn: toggleSavePlan
+    mutationFn: updatePlanMember
   })
 }

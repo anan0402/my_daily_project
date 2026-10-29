@@ -41,7 +41,11 @@ const formatRelativeTime = (value) => {
   return new Date(value).toLocaleDateString()
 }
 
-function NotificationMenu() {
+/**
+ * @param {Function} [onNotificationClick] - (notification) => void. Tầng app quyết định mở trang nào
+ *   theo `type` / `metadata` (vd. plan_invite → trang plan), vì feature khác không import được.
+ */
+function NotificationMenu({ onNotificationClick }) {
   const [anchorEl, setAnchorEl] = useState(null)
   const open = Boolean(anchorEl)
 
@@ -74,6 +78,10 @@ function NotificationMenu() {
   const handleItemClick = (notification) => {
     if (!notification.isRead) {
       markAsRead.mutate(notification._id)
+    }
+    if (onNotificationClick) {
+      handleClose()
+      onNotificationClick(notification)
     }
   }
 

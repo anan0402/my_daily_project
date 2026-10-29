@@ -8,6 +8,7 @@ import ChatRoute from '@/app/routes/chat'
 import HomeRoute from '@/app/routes/home'
 import NotFoundRoute from '@/app/routes/not-found'
 import PlanRoute from '@/app/routes/plan'
+import PlanJoinRoute from '@/app/routes/plan-join'
 import ProblemDemoRoute from '@/app/routes/problem-demo'
 import ProfileRoute from '@/app/routes/profile'
 import { GuestRoute, ProtectedRoute } from '@/app/routes/route-guards'
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
+        path: paths.home.path,
+        element: <HomeRoute />
+      },
+      {
+        path: paths.app.plan.path,
+        element: <PlanRoute />
+      },
+      {
         path: paths.app.problemDemo.path,
         element: <ProblemDemoRoute />
       },
@@ -53,12 +62,9 @@ export const router = createBrowserRouter([
     ]
   },
   {
-    path: paths.home.path,
-    element: <HomeRoute />
-  },
-  {
-    path: paths.app.plan.path,
-    element: <PlanRoute />
+    // Không đặt trong ProtectedRoute: chưa đăng nhập thì route tự giữ token rồi chuyển tới login
+    path: paths.app.planJoin.path,
+    element: <PlanJoinRoute />
   },
   {
     path: paths.notFound.path,

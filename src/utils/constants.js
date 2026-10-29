@@ -62,6 +62,22 @@ export const NOTIFICATION_EVENTS = {
   NOTIFICATIONS_CLEARED: 'notifications_cleared'
 }
 
+// Plan Events
+// Mọi thao tác ghi đi qua REST (features/plans/api), socket chỉ báo việc người khác vừa làm.
+// Payload luôn có planId và actorId. Backend contract: my_daily_project_api/docs/PLANS_API.md
+export const PLAN_EVENTS = {
+  // Outgoing events (emitted by server)
+  PLAN_UPDATED: 'plan_updated',
+  PLAN_DELETED: 'plan_deleted',
+  PLAN_MEMBER_ADDED: 'plan_member_added',
+  PLAN_MEMBER_UPDATED: 'plan_member_updated',
+  PLAN_MEMBER_REMOVED: 'plan_member_removed',
+  PLAN_TASK_CREATED: 'plan_task_created',
+  PLAN_TASK_UPDATED: 'plan_task_updated',
+  PLAN_TASK_DELETED: 'plan_task_deleted',
+  PLAN_TASKS_CLEARED: 'plan_tasks_cleared'
+}
+
 // Common Events
 export const COMMON_EVENTS = {
   CONNECT: 'connect',
@@ -75,5 +91,6 @@ export const SOCKET_EVENTS = {
   ...FRIEND_REQUEST_EVENTS,
   ...MESSAGE_EVENTS,
   ...NOTIFICATION_EVENTS,
+  ...PLAN_EVENTS,
   ...COMMON_EVENTS
 }

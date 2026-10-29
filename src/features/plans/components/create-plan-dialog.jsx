@@ -1,17 +1,11 @@
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Dialog from '@mui/material/Dialog'
 import { toast } from 'react-toastify'
 
 import { createPlanInputSchema, useCreatePlan } from '@/features/plans/api/create-plan'
-import {
-  PLAN_COLORS,
-  PLAN_TEMPLATES,
-  PLAN_VISIBILITIES,
-  getCurrentUserName
-} from '@/features/plans/utils/plan-helpers'
-import { selectCurrentUser } from '@/lib/store/user-slice'
+import { usePlanTemplates } from '@/features/plans/api/get-plan-templates'
+import { PLAN_COVER_COLORS, PLAN_VISIBILITIES } from '@/features/plans/utils/plan-helpers'
 import { getErrorMessage } from '@/utils/get-error-message'
 import './plan-dialog.css'
 import './create-plan-dialog.css'
@@ -19,22 +13,24 @@ import './create-plan-dialog.css'
 // Mặc định Private để người dùng không vô tình công khai dữ liệu
 const DEFAULT_VALUES = {
   title: '',
-  template: 'blank',
-  color: 'ink',
+  templateKey: '',
+  coverColor: 'ink',
   visibility: 'private',
   dueDate: ''
 }
 
 /**
+ * Mời thành viên làm ở trang chi tiết sau khi tạo (PLANS_API.md 8.3: MVP).
  * @param {Function} onCreated - (plan) => void
  */
 function CreatePlanDialog({ open, onClose, onCreated }) {
-  const currentUser = useSelector(selectCurrentUser)
+  const { data: templates = [] } = usePlanTemplates({ queryConfig: { enabled: open } })
   const {
     register,
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors }
   } = useForm({
     resolver: yupResolver(createPlanInputSchema),
@@ -52,11 +48,17 @@ function CreatePlanDialog({ open, onClose, onCreated }) {
   })
 
   const selectedVisibility = watch('visibility')
-  const selectedTemplate = PLAN_TEMPLATES.find((item) => item.value === watch('template'))
+  const selectedTemplate = templates.find((item) => item.key === watch('templateKey'))
 
-  const onSubmit = (values) => {
-    createPlanMutation.mutate({ ...values, ownerName: getCurrentUserName(currentUser) })
+  const templateField = register('templateKey')
+  const handleTemplateChange = (event) => {
+    templateField.onChange(event)
+    // Chọn template thì lấy luôn màu của template, người dùng vẫn đổi lại được
+    const template = templates.find((item) => item.key === event.target.value)
+    if (template?.coverColor) setValue('coverColor', template.coverColor)
   }
+
+  const onSubmit = (values) => createPlanMutation.mutate(values)
 
   return (
     <Dialog
@@ -94,16 +96,20 @@ function CreatePlanDialog({ open, onClose, onCreated }) {
         <fieldset className="plan-dialog-field">
           <legend className="plan-dialog-label">Start from</legend>
           <div className="plan-dialog-options">
-            {PLAN_TEMPLATES.map((template) => (
-              <label key={template.value} className="plan-dialog-option">
-                <input type="radio" value={template.value} {...register('template')} />
-                <span>{template.label}</span>
+            <label className="plan-dialog-option">
+              <input type="radio" value="" {...templateField} onChange={handleTemplateChange} />
+              <span>Blank</span>
+            </label>
+            {templates.map((template) => (
+              <label key={template.key} className="plan-dialog-option">
+                <input type="radio" value={template.key} {...templateField} onChange={handleTemplateChange} />
+                <span>{template.title}</span>
               </label>
             ))}
           </div>
           <p className="plan-dialog-hint">
-            {selectedTemplate?.tasks.length
-              ? `${selectedTemplate.tasks.length} starter tasks: ${selectedTemplate.tasks.join(', ')}.`
+            {selectedTemplate
+              ? `${selectedTemplate.taskCount} starter tasks. ${selectedTemplate.description || ''}`
               : 'An empty plan. Add tasks after creating it.'}
           </p>
         </fieldset>
@@ -112,17 +118,17 @@ function CreatePlanDialog({ open, onClose, onCreated }) {
           <fieldset className="plan-dialog-field">
             <legend className="plan-dialog-label">Color</legend>
             <div className="create-plan-colors">
-              {PLAN_COLORS.map((color) => (
+              {PLAN_COVER_COLORS.map((color) => (
                 <label key={color.value} className="create-plan-color" title={color.label}>
-                  <input type="radio" value={color.value} aria-label={color.label} {...register('color')} />
-                  <span style={{ background: color.hex }} />
+                  <input type="radio" value={color.value} aria-label={color.label} {...register('coverColor')} />
+                  <span style={{ background: color.color }} />
                 </label>
               ))}
             </div>
           </fieldset>
 
           <div className="plan-dialog-field">
-            <label htmlFor="plan-due-date" className="plan-dialog-label">Due date (optional)</label>
+            <label htmlFor="plan-due-date" className="plan-dialog-label">Deadline (optional)</label>
             <input id="plan-due-date" type="date" className="plan-dialog-input" {...register('dueDate')} />
           </div>
         </div>

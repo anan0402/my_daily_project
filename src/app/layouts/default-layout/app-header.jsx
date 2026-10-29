@@ -61,6 +61,14 @@ function AppHeader({ showSidebar = false }) {
     dispatch(logoutUserAPI())
   }
 
+  // plan_invite / plan_member_joined / plan_task_assigned có metadata.planId
+  const handleNotificationClick = (notification) => {
+    const planId = notification?.metadata?.planId
+    if (notification?.type?.startsWith('plan_') && planId) {
+      navigate(paths.app.plan.getHref(planId))
+    }
+  }
+
   const handleLogin = () => {
     navigate(paths.auth.login.getHref())
   }
@@ -153,7 +161,7 @@ function AppHeader({ showSidebar = false }) {
         {currentUser ? (
           <>
             <div className="app-header-right">
-              <NotificationMenu />
+              <NotificationMenu onNotificationClick={handleNotificationClick} />
               {showSidebar && (
                 <IconButton
                   onClick={handleToggleSidebar}

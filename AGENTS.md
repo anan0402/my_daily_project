@@ -47,7 +47,7 @@ config/         env.js, paths.js (route paths + getHref helpers)
 features/       auth, chat, friends, notifications, plans, users
 hooks/          shared hooks (use-debounce)
 lib/            api-client, auth (login/logout/refresh), react-query, socket, token-storage, store/ (Redux)
-testing/        fake data for demos (fake-api.js, fake-plans-db.js: localStorage backend for plans until /v1/plans exists)
+testing/        fake data for demos (fake-api.js)
 utils/          constants (socket event names), get-avatar-src, get-error-message
 styles/         global.css
 ```
@@ -82,16 +82,15 @@ Each file contains, in order:
 Mutations invalidate through query options (`getFriendsQueryOptions().queryKey`), never a hand-written key. They destructure `onSuccess` from `mutationConfig` and call it after their own cache work, so callers can add behaviour (e.g. the profile page also invalidates the viewed user).
 
 Exceptions:
-- `features/plans/api` fetchers call `fakePlansDb` (`testing/fake-plans-db.js`) instead of `api`, because the backend has no `/v1/plans` yet. When it does, swap only the fetchers to `api.get/post...`.
 - `lib/auth.js` holds login / login with Google / logout / refresh token, because Redux (`lib/store/user-slice.js`), the axios interceptor and the socket all depend on them.
 - The auth form flows (register, OTP, forgot/reset password) call their fetchers directly, not through `useMutation`: the global `retry: 1` for mutations in `lib/react-query.js` would otherwise resend OTP/registration requests.
 
 ### Realtime (Socket.IO)
 
 - `lib/socket.js` owns the connection: `initSocket`, `disconnectSocket`, `subscribeToEvent`, `emitEvent`, and re-joins conversation rooms after every reconnect. Event names are in `utils/constants.js`.
-- User actions (send / accept friend request, etc.) go through a REST mutation, not a socket emit: a mutation gives success/error, `isPending` and the token-refresh interceptor. Sockets are for hearing what the *other* user did. Backend contract: `my_daily_project_api/docs/FRIENDS_API.md`.
+- User actions (send / accept friend request, etc.) go through a REST mutation, not a socket emit: a mutation gives success/error, `isPending` and the token-refresh interceptor. Sockets are for hearing what the *other* user did. Backend contracts: `my_daily_project_api/docs/FRIENDS_API.md`, `my_daily_project_api/docs/PLANS_API.md`.
 - Each feature wraps its own events in `features/<feature>/api/<name>-socket.js` (`message-socket.js`, `friend-socket.js`, `notification-socket.js`). `subscribeTo*` functions return an unsubscribe function.
-- Subscriptions that only touch one feature's cache live in that feature as a hook (`features/notifications/hooks/use-notification-subscriptions.js`, `features/friends/hooks/use-friend-status-subscriptions.js`), with the cache helper next to the query options (`prependNotificationToCache`, `setFriendsOnlineStatus`).
+- Subscriptions that only touch one feature's cache live in that feature as a hook (`features/notifications/hooks/use-notification-subscriptions.js`, `features/friends/hooks/use-friend-status-subscriptions.js`, `features/plans/hooks/use-plan-subscriptions.js`), with the cache helper next to the query options (`prependNotificationToCache`, `setFriendsOnlineStatus`).
 - `app/use-global-socket-subscriptions.js` calls those hooks and handles only the events that touch several features' caches. Keep it that way so it doesn't grow with every feature.
 - Read Redux state that a handler needs at event time (`useStore().getState()`) instead of adding it to the effect's deps, otherwise every change unsubscribes and resubscribes.
 

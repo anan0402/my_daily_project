@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 
+import { usePlanCounts } from '@/features/plans/api/get-plan-counts'
 import { PLAN_VIEWS } from '@/features/plans/utils/plan-helpers'
 import { paths } from '@/config/paths'
 import './plans-workspace-layout.css'
@@ -9,6 +10,9 @@ import './plans-workspace-layout.css'
  * @param {string|null} activeView - View đang mở; null ở trang chi tiết plan
  */
 function PlansWorkspaceLayout({ activeView = null, children }) {
+  // { mine, shared, saved }, Discover không có count
+  const { data: counts } = usePlanCounts()
+
   return (
     <div className="plans-workspace">
       <aside className="plans-workspace-sidebar">
@@ -21,7 +25,10 @@ function PlansWorkspaceLayout({ activeView = null, children }) {
               className={`plans-workspace-nav-item ${activeView === view.value ? 'is-active' : ''}`}
               aria-current={activeView === view.value ? 'page' : undefined}
             >
-              {view.label}
+              <span>{view.label}</span>
+              {typeof counts?.[view.value] === 'number' && (
+                <span className="plans-workspace-nav-count">{String(counts[view.value]).padStart(2, '0')}</span>
+              )}
             </Link>
           ))}
         </nav>

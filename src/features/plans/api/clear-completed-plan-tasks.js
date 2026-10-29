@@ -1,11 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { fakePlansDb } from '@/testing/fake-plans-db'
-import { setPlanCache } from '@/features/plans/api/get-plan'
+import { api } from '@/lib/api-client'
 import { getPlansQueryOptions } from '@/features/plans/api/get-plans'
 
-/** Owner / editor */
-export const clearCompletedPlanTasks = (planId) => fakePlansDb.clearCompletedTasks(planId)
+/**
+ * Owner / editor: nút Clear ở mục Completed.
+ * @returns {Promise} { deletedCount }
+ */
+export const clearCompletedPlanTasks = async (planId) => {
+  const response = await api.delete(`/v1/plans/${planId}/tasks/completed`)
+  return response.data
+}
 
 export const useClearCompletedPlanTasks = ({ mutationConfig } = {}) => {
   const queryClient = useQueryClient()
@@ -13,10 +18,9 @@ export const useClearCompletedPlanTasks = ({ mutationConfig } = {}) => {
   const { onSuccess, ...restConfig } = mutationConfig || {}
 
   return useMutation({
-    onSuccess: (plan, ...args) => {
-      setPlanCache(queryClient, plan)
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: getPlansQueryOptions().queryKey })
-      onSuccess?.(plan, ...args)
+      onSuccess?.(...args)
     },
     ...restConfig,
     mutationFn: clearCompletedPlanTasks

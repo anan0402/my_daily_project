@@ -7,6 +7,7 @@ import { getFriendsQueryOptions } from '@/features/friends/api/get-friends'
 import { getReceivedFriendRequestsQueryOptions } from '@/features/friends/api/get-received-friend-requests'
 import { useFriendStatusSubscriptions } from '@/features/friends/hooks/use-friend-status-subscriptions'
 import { useNotificationSubscriptions } from '@/features/notifications/hooks/use-notification-subscriptions'
+import { usePlanSubscriptions } from '@/features/plans/hooks/use-plan-subscriptions'
 import { getUserQueryOptions } from '@/features/users/api/get-user'
 import { selectSocketStatus } from '@/lib/store/socket-slice'
 
@@ -23,6 +24,7 @@ export const useGlobalSocketSubscriptions = () => {
 
   useNotificationSubscriptions()
   useFriendStatusSubscriptions()
+  usePlanSubscriptions()
 
   // friends + users: người kia gửi / chấp nhận lời mời -> đổi relationshipStatus và list bạn bè.
   // Thao tác của chính mình thì mutation tự invalidate.

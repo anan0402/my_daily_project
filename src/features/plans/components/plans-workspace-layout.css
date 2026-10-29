@@ -35,6 +35,10 @@
 }
 
 .plans-workspace-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 10px 12px;
   font-family: var(--font-sans);
   font-size: 14px;
@@ -51,6 +55,12 @@
 .plans-workspace-nav-item.is-active {
   background: var(--color-surface-hover);
   color: var(--color-fg);
+}
+
+.plans-workspace-nav-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-muted);
 }
 
 .plans-workspace-nav-item:focus-visible,

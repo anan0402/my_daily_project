@@ -1,0 +1,45 @@
+.task-edit-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.task-edit-select {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.task-edit-assignees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.task-edit-assignee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-fg);
+  cursor: pointer;
+}
+
+.task-edit-assignee input {
+  margin: 0;
+  accent-color: var(--color-fg);
+}
+
+.task-edit-note {
+  resize: vertical;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .task-edit-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

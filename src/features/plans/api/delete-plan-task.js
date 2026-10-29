@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { fakePlansDb } from '@/testing/fake-plans-db'
-import { setPlanCache, updatePlanTasksInCache } from '@/features/plans/api/get-plan'
+import { api } from '@/lib/api-client'
+import { getPlanQueryOptions, setPlanCache, updatePlanInCache } from '@/features/plans/api/get-plan'
 import { getPlansQueryOptions } from '@/features/plans/api/get-plans'
 
-/** Owner / editor. Cập nhật cache trước, rollback nếu lỗi */
-export const deletePlanTask = ({ planId, taskId }) => fakePlansDb.deleteTask(planId, taskId)
+/** Owner / editor. Xoá khỏi cache trước, rollback nếu lỗi */
+export const deletePlanTask = async ({ planId, taskId }) => {
+  const response = await api.delete(`/v1/plans/${planId}/tasks/${taskId}`)
+  return response.data
+}
 
 export const useDeletePlanTask = ({ mutationConfig } = {}) => {
   const queryClient = useQueryClient()
@@ -13,16 +16,17 @@ export const useDeletePlanTask = ({ mutationConfig } = {}) => {
   const { onSuccess, onError, ...restConfig } = mutationConfig || {}
 
   return useMutation({
-    onMutate: ({ planId, taskId }) => {
-      const previous = updatePlanTasksInCache(queryClient, planId, (tasks) =>
-        tasks.filter((item) => item._id !== taskId)
-      )
+    onMutate: async ({ planId, taskId }) => {
+      await queryClient.cancelQueries({ queryKey: getPlanQueryOptions(planId).queryKey })
+      const previous = updatePlanInCache(queryClient, planId, (plan) => ({
+        ...plan,
+        tasks: plan.tasks.filter((task) => task._id !== taskId)
+      }))
       return { previous }
     },
-    onSuccess: (plan, ...args) => {
-      setPlanCache(queryClient, plan)
+    onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: getPlansQueryOptions().queryKey })
-      onSuccess?.(plan, ...args)
+      onSuccess?.(...args)
     },
     onError: (error, variables, context, ...args) => {
       if (context?.previous) setPlanCache(queryClient, context.previous)
