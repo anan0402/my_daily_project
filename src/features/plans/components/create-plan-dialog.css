@@ -1,0 +1,42 @@
+.create-plan-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 32px;
+}
+
+.create-plan-colors {
+  display: flex;
+  gap: 10px;
+}
+
+.create-plan-color {
+  position: relative;
+  cursor: pointer;
+}
+
+.create-plan-color input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.create-plan-color span {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--color-bg);
+  transition: box-shadow 0.15s ease;
+}
+
+.create-plan-color input:checked + span,
+.create-plan-color input:focus-visible + span {
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-fg);
+}
+
+@media (max-width: 600px) {
+  .create-plan-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}

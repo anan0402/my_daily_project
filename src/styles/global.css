@@ -45,6 +45,11 @@ body,
   --color-card-shadow: rgba(73, 67, 54, 0.18);
   --color-card-shadow-light: rgba(73, 67, 54, 0.14);
 
+  /* Plan Workspace */
+  --color-accent: #ff5a1f;
+  --color-card-muted: rgba(255, 255, 255, 0.6);
+  --color-card-line: rgba(255, 255, 255, 0.18);
+
   --font-mono: 'JetBrains Mono', monospace;
   --font-sans: 'Inter', sans-serif;
 }

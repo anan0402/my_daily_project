@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Daily days is a React + Vite SPA: users sign up (email/OTP or Google), manage a to-do list, add friends, chat in real time and receive notifications. The backend is a separate REST + Socket.IO server.
+Daily days is a React + Vite SPA: users sign up (email/OTP or Google), plan together in a Plan Workspace (plans with tasks, members and privacy), add friends, chat in real time and receive notifications. The backend is a separate REST + Socket.IO server.
 
 The source layout follows the [Bulletproof React](https://github.com/alan2207/bulletproof-react) architecture, adapted to this project's stack. Don't introduce libraries from Bulletproof that this project does not use (TypeScript, Tailwind, Zustand, Zod, MSW...).
 
@@ -44,10 +44,10 @@ components/     shared UI with no business logic
   ui/             design-system components (custom-button, custom-avatar, otp, text...)
   layouts/        layouts with no feature dependencies (auth-card-layout, simple-card-layout)
 config/         env.js, paths.js (route paths + getHref helpers)
-features/       auth, chat, friends, notifications, todos, users
+features/       auth, chat, friends, notifications, plans, users
 hooks/          shared hooks (use-debounce)
 lib/            api-client, auth (login/logout/refresh), react-query, socket, token-storage, store/ (Redux)
-testing/        fake data for demos (fake-api.js)
+testing/        fake data for demos (fake-api.js, fake-plans-db.js: localStorage backend for plans until /v1/plans exists)
 utils/          constants (socket event names), get-avatar-src, get-error-message
 styles/         global.css
 ```
@@ -67,9 +67,9 @@ Features contain `api/` and `components/`. Add another folder only when a featur
 
 One file per endpoint in `features/<feature>/api/<verb>-<resource>.js`. Copy an existing file rather than inventing a new shape:
 
-- Query: `features/todos/api/get-todos.js`
+- Query: `features/friends/api/get-friends.js`
 - Infinite query: `features/chat/api/get-messages.js`
-- Mutation: `features/todos/api/create-todo.js`
+- Mutation: `features/friends/api/accept-friend-request.js`
 - Mutation with optimistic cache update: `features/notifications/api/delete-notification.js`
 
 Each file contains, in order:
@@ -77,11 +77,12 @@ Each file contains, in order:
 1. For form inputs: a yup schema (`registerInputSchema`, `resetPasswordInputSchema`). The form uses the same schema through `yupResolver`.
 2. A plain fetcher using `api` from `@/lib/api-client`, usable outside React.
 3. For queries: `get<X>QueryOptions()` built with `queryOptions()` / `infiniteQueryOptions()`. It is the only place the query key is defined.
-4. A hook (`useTodos`, `useCreateTodo`) taking an options object: `{ ...params, queryConfig }` or `{ mutationConfig }`.
+4. A hook (`useFriends`, `useAcceptFriendRequest`) taking an options object: `{ ...params, queryConfig }` or `{ mutationConfig }`.
 
-Mutations invalidate through query options (`getTodosQueryOptions().queryKey`), never a hand-written key. They destructure `onSuccess` from `mutationConfig` and call it after their own cache work, so callers can add behaviour (e.g. the profile page also invalidates the viewed user).
+Mutations invalidate through query options (`getFriendsQueryOptions().queryKey`), never a hand-written key. They destructure `onSuccess` from `mutationConfig` and call it after their own cache work, so callers can add behaviour (e.g. the profile page also invalidates the viewed user).
 
 Exceptions:
+- `features/plans/api` fetchers call `fakePlansDb` (`testing/fake-plans-db.js`) instead of `api`, because the backend has no `/v1/plans` yet. When it does, swap only the fetchers to `api.get/post...`.
 - `lib/auth.js` holds login / login with Google / logout / refresh token, because Redux (`lib/store/user-slice.js`), the axios interceptor and the socket all depend on them.
 - The auth form flows (register, OTP, forgot/reset password) call their fetchers directly, not through `useMutation`: the global `retry: 1` for mutations in `lib/react-query.js` would otherwise resend OTP/registration requests.
 

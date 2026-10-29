@@ -1,0 +1,34 @@
+.plan-visibility-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+}
+
+.plan-visibility-badge.is-inverse {
+  color: var(--color-bg);
+}
+
+.plan-visibility-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-fg);
+}
+
+.plan-visibility-badge.is-inverse .plan-visibility-badge-dot {
+  background: var(--color-bg);
+}
+
+.plan-visibility-badge--private .plan-visibility-badge-dot {
+  opacity: 0.35;
+}
+
+.plan-visibility-badge--public .plan-visibility-badge-dot,
+.plan-visibility-badge.is-inverse.plan-visibility-badge--public .plan-visibility-badge-dot {
+  background: var(--color-accent);
+}

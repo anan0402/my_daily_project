@@ -1,0 +1,183 @@
+/* Style chung cho các dialog của Plan Workspace (MUI Dialog) */
+.plan-dialog-paper.MuiPaper-root {
+  width: 100%;
+  max-width: 480px;
+  margin: 24px;
+  padding: 32px;
+  border-radius: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  box-shadow: 0 18px 60px var(--color-shadow-strong);
+}
+
+.plan-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.plan-dialog-title {
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.plan-dialog-subtitle {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--color-text-tertiary);
+}
+
+.plan-dialog-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-fg);
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+.plan-dialog-close:hover {
+  opacity: 0.4;
+}
+
+.plan-dialog-field {
+  margin: 0 0 24px;
+  padding: 0;
+  border: none;
+}
+
+.plan-dialog-label {
+  display: block;
+  margin-bottom: 12px;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+}
+
+.plan-dialog-input {
+  width: 100%;
+  padding: 0 0 12px;
+  border: none;
+  border-bottom: 1.5px solid var(--color-fg);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  outline: none;
+}
+
+.plan-dialog-input::placeholder {
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+}
+
+.plan-dialog-input[aria-invalid='true'] {
+  border-bottom-color: var(--color-error);
+}
+
+.plan-dialog-error {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-error);
+}
+
+/* Lựa chọn dạng chip (template, quyền, vai trò) */
+.plan-dialog-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.plan-dialog-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.plan-dialog-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.plan-dialog-option span {
+  display: block;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-subtle);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.plan-dialog-option input:checked + span {
+  border-color: var(--color-fg);
+  background: var(--color-fg);
+  color: var(--color-bg);
+}
+
+.plan-dialog-option input:focus-visible + span {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 2px;
+}
+
+.plan-dialog-hint {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-tertiary);
+}
+
+.plan-dialog-submit {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.plan-dialog-submit:hover {
+  opacity: 0.8;
+}
+
+.plan-dialog-submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Mobile: dialog thành bottom sheet */
+@media (max-width: 600px) {
+  .plan-dialog-container.MuiDialog-container {
+    align-items: flex-end;
+  }
+
+  .plan-dialog-paper.MuiPaper-root {
+    max-width: none;
+    max-height: calc(100% - 48px);
+    margin: 0;
+    padding: 24px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+}

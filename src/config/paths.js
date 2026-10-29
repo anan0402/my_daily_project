@@ -1,7 +1,8 @@
 export const paths = {
   home: {
     path: '/',
-    getHref: () => '/'
+    // view: mục của Plan Workspace (mine | shared | discover | saved), mặc định mine
+    getHref: (view) => (view && view !== 'mine' ? `/?view=${view}` : '/')
   },
 
   auth: {
@@ -25,6 +26,10 @@ export const paths = {
   },
 
   app: {
+    plan: {
+      path: '/plans/:planId',
+      getHref: (planId) => `/plans/${planId}`
+    },
     profile: {
       path: '/profile/:id',
       getHref: (id) => `/profile/${id}`

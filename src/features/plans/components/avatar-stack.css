@@ -1,0 +1,33 @@
+.avatar-stack {
+  display: flex;
+}
+
+.avatar-stack-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--color-bg);
+  background: var(--color-surface-hover);
+  color: var(--color-subtle);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.avatar-stack-item:first-child {
+  margin-left: 0;
+}
+
+.avatar-stack.is-inverse .avatar-stack-item {
+  border-color: var(--color-fg);
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+.avatar-stack-more {
+  background: var(--color-border-strong);
+}

@@ -7,6 +7,7 @@ import RegisterRoute from '@/app/routes/auth/register'
 import ChatRoute from '@/app/routes/chat'
 import HomeRoute from '@/app/routes/home'
 import NotFoundRoute from '@/app/routes/not-found'
+import PlanRoute from '@/app/routes/plan'
 import ProblemDemoRoute from '@/app/routes/problem-demo'
 import ProfileRoute from '@/app/routes/profile'
 import { GuestRoute, ProtectedRoute } from '@/app/routes/route-guards'
@@ -54,6 +55,10 @@ export const router = createBrowserRouter([
   {
     path: paths.home.path,
     element: <HomeRoute />
+  },
+  {
+    path: paths.app.plan.path,
+    element: <PlanRoute />
   },
   {
     path: paths.notFound.path,

@@ -1,0 +1,114 @@
+.invite-plan-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  column-gap: 16px;
+}
+
+.invite-plan-select {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.invite-plan-submit {
+  grid-column: 1 / -1;
+}
+
+.invite-plan-copy {
+  display: block;
+  margin: 16px auto 0;
+  border: none;
+  background: transparent;
+  color: var(--color-fg);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.invite-plan-copy:hover {
+  opacity: 0.5;
+}
+
+.invite-plan-members-label {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.invite-plan-members {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.invite-plan-member {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.invite-plan-member-avatar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-surface-hover);
+  color: var(--color-subtle);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.invite-plan-member-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.invite-plan-member-name {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-fg);
+}
+
+.invite-plan-member-email {
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invite-plan-member-role {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-subtle);
+}
+
+.invite-plan-member-remove {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.invite-plan-member-remove:hover {
+  color: var(--color-error);
+}
+
+@media (max-width: 600px) {
+  .invite-plan-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
