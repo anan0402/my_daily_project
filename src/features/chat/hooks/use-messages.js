@@ -49,13 +49,14 @@ export const useMessages = (conversationId, currentUserId) => {
       },
 
       // Handle user typing
-      onUserTyping: ({ userId, username }) => {
+      // Server gửi { userId, displayName, conversationId }
+      onUserTyping: ({ userId, displayName }) => {
         setTypingUsers((prev) => {
           // Check if user is already in typing list
           if (prev.find((user) => user.userId === userId)) {
             return prev
           }
-          return [...prev, { userId, username }]
+          return [...prev, { userId, displayName }]
         })
       },
 

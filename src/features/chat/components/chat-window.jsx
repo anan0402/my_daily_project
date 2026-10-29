@@ -155,7 +155,11 @@ function ChatWindow({ userId, isOnline, onAvatarClick }) {
           hasMore={hasNextPage}
           isLoadingMore={isFetchingNextPage}
           isLoading={isLoadingMessages}
-          typingUsers={typingUsers}
+          // Chat 1-1: dùng tên trong conversation info, vì displayName từ socket lấy từ JWT (chỉ có email)
+          typingUsers={typingUsers.map((user) => ({
+            ...user,
+            displayName: chatUser?.username || user.displayName
+          }))}
         />
       </Box>
 

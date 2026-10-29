@@ -180,7 +180,7 @@ function MessageArea({
                     <CustomThreeDotsLoading size={6} color="#666" />
                     <Text className="typing-indicator-text">
                       {typingUsers.length === 1
-                        ? `${typingUsers[0].username} is typing`
+                        ? `${typingUsers[0].displayName} is typing`
                         : `${typingUsers.length} people are typing`
                       }
                     </Text>
